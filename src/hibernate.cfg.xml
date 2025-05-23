@@ -17,6 +17,6 @@
         <property name="hibernate.show_sql">true</property>
 
         <!-- Classes -->
-        <mapping class="com.syos.data.model.Product"/>
+        <mapping class="com.syos.domain.entity.Product"/>
     </session-factory>
 </hibernate-configuration>
