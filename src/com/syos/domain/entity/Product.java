@@ -1,4 +1,4 @@
-package com.syos.data.model;
+package com.syos.domain.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Product {
 
     @Id
-    @Column(name = "ItemCode")
+    @Column(name = "ItemCode") // [CategoryCode]-[BrandCode]-[SizeCode]-[Sequence] - BEV-TRO-1L-0012
     private String itemCode;
 
     @Column(name = "BatchCode")

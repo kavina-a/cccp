@@ -5,7 +5,12 @@
         </encoder>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="STDOUT" />
+    <logger name="com.syos" level="DEBUG"/>
+
+    <logger name="org.hibernate" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
     </root>
+
 </configuration>
