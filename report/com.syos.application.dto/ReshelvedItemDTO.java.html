@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReshelvedItemDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.dto</a> &gt; <span class="el_source">ReshelvedItemDTO.java</span></div><h1>ReshelvedItemDTO.java</h1><pre class="source lang-java linenums">package com.syos.application.dto;
+
+import java.time.LocalDate;
+
+public class ReshelvedItemDTO {
+    private String itemCode;
+    private String itemName;
+    private int shelfCapacity;
+    private int currentQuantity;
+    private int toBeReshelved;
+    private LocalDate lastMovedDate;
+    private int expiredQuantity;
+    private int soldQuantity;
+
+
+    public ReshelvedItemDTO(String itemCode, String itemName, int shelfCapacity,
+<span class="nc" id="L17">                            int currentQuantity, int toBeReshelved, LocalDate lastMovedDate, int expiredQuantity, int soldQuantity) {</span>
+<span class="nc" id="L18">        this.itemCode = itemCode;</span>
+<span class="nc" id="L19">        this.itemName = itemName;</span>
+<span class="nc" id="L20">        this.shelfCapacity = shelfCapacity;</span>
+<span class="nc" id="L21">        this.currentQuantity = currentQuantity;</span>
+<span class="nc" id="L22">        this.toBeReshelved = toBeReshelved;</span>
+<span class="nc" id="L23">        this.lastMovedDate = lastMovedDate;</span>
+<span class="nc" id="L24">        this.expiredQuantity = expiredQuantity;</span>
+<span class="nc" id="L25">        this.soldQuantity = soldQuantity;</span>
+<span class="nc" id="L26">    }</span>
+
+<span class="nc" id="L28">    public ReshelvedItemDTO() {</span>
+
+<span class="nc" id="L30">    }</span>
+
+    // Getters and Setters
+
+    public String getItemCode() {
+<span class="nc" id="L35">        return itemCode;</span>
+    }
+
+    public void setItemCode(String itemCode) {
+<span class="nc" id="L39">        this.itemCode = itemCode;</span>
+<span class="nc" id="L40">    }</span>
+
+    public String getItemName() {
+<span class="nc" id="L43">        return itemName;</span>
+    }
+
+    public void setItemName(String itemName) {
+<span class="nc" id="L47">        this.itemName = itemName;</span>
+<span class="nc" id="L48">    }</span>
+
+    public int getShelfCapacity() {
+<span class="nc" id="L51">        return shelfCapacity;</span>
+    }
+
+    public void setShelfCapacity(int shelfCapacity) {
+<span class="nc" id="L55">        this.shelfCapacity = shelfCapacity;</span>
+<span class="nc" id="L56">    }</span>
+
+    public int getCurrentQuantity() {
+<span class="nc" id="L59">        return currentQuantity;</span>
+    }
+
+    public void setCurrentQuantity(int currentQuantity) {
+<span class="nc" id="L63">        this.currentQuantity = currentQuantity;</span>
+<span class="nc" id="L64">    }</span>
+
+    public int getExpiredQuantity() {
+<span class="nc" id="L67">        return expiredQuantity;</span>
+    }
+
+    public void setExpiredQuantity(int expiredQuantity) {
+<span class="nc" id="L71">        this.expiredQuantity = expiredQuantity;</span>
+<span class="nc" id="L72">    }</span>
+
+    public int getSoldQuantity() {
+<span class="nc" id="L75">        return soldQuantity;</span>
+    }
+
+    public void setSoldQuantity(int soldQuantity) {
+<span class="nc" id="L79">        this.soldQuantity = soldQuantity;</span>
+<span class="nc" id="L80">    }</span>
+
+    public int getToBeReshelved() {
+<span class="nc" id="L83">        return toBeReshelved;</span>
+    }
+
+    public void setToBeReshelved(int toBeReshelved) {
+<span class="nc" id="L87">        this.toBeReshelved = toBeReshelved;</span>
+<span class="nc" id="L88">    }</span>
+
+
+
+    public LocalDate getLastMovedDate() {
+<span class="nc" id="L93">        return lastMovedDate;</span>
+    }
+
+    public void setLastMovedDate(LocalDate lastMovedDate) {
+<span class="nc" id="L97">        this.lastMovedDate = lastMovedDate;</span>
+<span class="nc" id="L98">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

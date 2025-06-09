@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportGenerationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.reports.service</a> &gt; <span class="el_source">ReportGenerationService.java</span></div><h1>ReportGenerationService.java</h1><pre class="source lang-java linenums">package com.syos.application.reports.service;
+
+import com.syos.application.reports.bill.BillReport;
+import com.syos.application.reports.bill.fetch.*;
+import com.syos.application.reports.data.*;
+import com.syos.application.reports.reshelf.ReshelfReport;
+import com.syos.application.reports.reshelf.fetch.ShelfReshelfFetcher;
+import com.syos.application.reports.restock.RestockReport;
+import com.syos.application.reports.restock.fetch.StoreRestockFetchStrategy;
+import com.syos.application.reports.stock.StockReport;
+import com.syos.application.reports.template.ReportTemplate;
+import com.syos.application.reports.totalsale.TotalSaleReport;
+import com.syos.application.reports.totalsale.fetch.*;
+
+import com.syos.data.dao.interfaces.*;
+
+import com.syos.domain.entity.BillType;
+import com.syos.domain.entity.ReportType;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Objects;
+
+import static com.syos.domain.entity.ReportType.*;
+
+public class ReportGenerationService {
+
+    private final BillDao billDao;
+    private final BillItemDao billItemDao;
+    private final ShelfDao shelfDao;
+    private final StoreDao storeDao;
+
+<span class="fc" id="L33">    public ReportGenerationService(BillDao billDao, BillItemDao billItemDao, ShelfDao shelfDao, StoreDao storeDao) {</span>
+<span class="fc" id="L34">        this.billDao = billDao;</span>
+<span class="fc" id="L35">        this.billItemDao = billItemDao;</span>
+<span class="fc" id="L36">        this.shelfDao = shelfDao;</span>
+<span class="fc" id="L37">        this.storeDao = storeDao;</span>
+<span class="fc" id="L38">    }</span>
+
+    // 1. Total Sale Report
+    public void generateTotalSaleReport(LocalDate date, ReportType type) throws SQLException {
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (type == null) {</span>
+<span class="nc" id="L43">            throw new IllegalArgumentException(&quot;Report type must not be null&quot;);</span>
+        }
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        TotalSaleFetchStrategy fetchStrategy = switch (type) {</span>
+<span class="fc" id="L46">            case OTC -&gt; new OTCTotalSaleFetcher(billItemDao);</span>
+<span class="fc" id="L47">            case WEB -&gt; new WEBTotalSaleFetcher(billItemDao);</span>
+<span class="fc" id="L48">            case COMBINED -&gt; new AllTotalSaleFetcher(billItemDao);</span>
+<span class="nc" id="L49">            default -&gt; throw new IllegalArgumentException(&quot;Invalid type for Total Sale Report&quot;);</span>
+        };
+<span class="fc" id="L51">        ReportTemplate&lt;TotalSaleReportDTO&gt; report = new TotalSaleReport(fetchStrategy, date);</span>
+<span class="fc" id="L52">        report.generateReport();</span>
+<span class="fc" id="L53">    }</span>
+
+    // 2. Bill Report
+    public void generateBillReport(ReportType type) throws SQLException {
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L58">            throw new IllegalArgumentException(&quot;Report type must not be null&quot;);</span>
+        }
+<span class="pc bpc" id="L60" title="1 of 4 branches missed.">        BillFetchStrategy fetchStrategy = switch (type) {</span>
+<span class="fc" id="L61">            case OTC -&gt; new OTCBillFetcher();</span>
+<span class="fc" id="L62">            case WEB -&gt; new WebBillFetcher();</span>
+<span class="fc" id="L63">            case COMBINED -&gt; new AllBillFetcher();</span>
+<span class="nc" id="L64">            default -&gt; throw new IllegalArgumentException(&quot;Invalid type for Bill Report&quot;);</span>
+        };
+<span class="fc" id="L66">        ReportTemplate&lt;BillReportDTO&gt; report = new BillReport(billDao, fetchStrategy);</span>
+<span class="fc" id="L67">        report.generateReport();</span>
+<span class="fc" id="L68">    }</span>
+
+    // 3. Reshelving Report
+    public void generateReshelfReport() throws SQLException {
+<span class="fc" id="L72">        ReportTemplate&lt;ReshelfReportDTO&gt; report = new ReshelfReport(new ShelfReshelfFetcher(shelfDao));</span>
+<span class="fc" id="L73">        report.generateReport();</span>
+<span class="fc" id="L74">    }</span>
+
+    // 4. Stock Report
+    public void generateStockReport() throws SQLException {
+<span class="fc" id="L78">        ReportTemplate&lt;StockReportDTO&gt; report = new StockReport(storeDao);</span>
+<span class="fc" id="L79">        report.generateReport();</span>
+<span class="fc" id="L80">    }</span>
+
+    public void generateRestockReport() throws SQLException {
+<span class="fc" id="L83">        RestockReport report = new RestockReport(new StoreRestockFetchStrategy(storeDao));</span>
+<span class="fc" id="L84">        report.generateReport();</span>
+<span class="fc" id="L85">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

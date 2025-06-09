@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SessionManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.utils</a> &gt; <span class="el_source">SessionManager.java</span></div><h1>SessionManager.java</h1><pre class="source lang-java linenums">package com.syos.utils;
+
+import com.syos.domain.entity.Customer;
+import com.syos.domain.entity.Employee;
+
+public class SessionManager {
+
+    private static SessionManager instance;
+
+    private Customer loggedInCustomer;
+    private Employee loggedInEmployee;
+
+    private SessionManager() {}
+
+    public static synchronized SessionManager getInstance() {
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L17">            instance = new SessionManager();</span>
+        }
+<span class="fc" id="L19">        return instance;</span>
+    }
+
+    public void setLoggedInEmployee(Employee employee) {
+<span class="fc" id="L23">        this.loggedInEmployee = employee;</span>
+<span class="fc" id="L24">        this.loggedInCustomer = null; // prevent dual login</span>
+<span class="fc" id="L25">    }</span>
+
+    public Employee getLoggedInEmployee() {
+<span class="nc" id="L28">        return loggedInEmployee;</span>
+    }
+
+    public boolean isEmployeeLoggedIn() {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        return loggedInEmployee != null;</span>
+    }
+
+    public void setLoggedInCustomer(Customer customer) {
+<span class="fc" id="L36">        this.loggedInCustomer = customer;</span>
+<span class="fc" id="L37">        this.loggedInEmployee = null; // prevent dual login</span>
+<span class="fc" id="L38">    }</span>
+
+    public Customer getLoggedInCustomer() {
+<span class="nc" id="L41">        return loggedInCustomer;</span>
+    }
+
+    public boolean isCustomerLoggedIn() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        return loggedInCustomer != null;</span>
+    }
+
+    public void logout() {
+<span class="nc" id="L49">        this.loggedInEmployee = null;</span>
+<span class="nc" id="L50">        this.loggedInCustomer = null;</span>
+<span class="nc" id="L51">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

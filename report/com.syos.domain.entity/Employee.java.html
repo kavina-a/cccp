@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.entity</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">//package com.syos.domain.entity;
+//
+//import jakarta.persistence.*;
+//
+//import java.util.Date;
+//
+//@Entity
+//@Table(name = &quot;tblEmployee&quot;)
+//public class Employee {
+//
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = &quot;EmployeeID&quot;)
+//    private int employeeID;
+//
+//    @Column(name = &quot;EmployeeNumber&quot;, unique = true)
+//    private String employeeNumber;
+//
+//    @Column(name = &quot;Email&quot;, unique = true)
+//    private String email;
+//
+//    @Column(name = &quot;Username&quot;, nullable = false, unique = true)
+//    private String username;
+//
+//    @Column(name = &quot;Password&quot;, nullable = false)
+//    private String password;
+//
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = &quot;Role&quot;, nullable = false)
+//    private EmployeeRole role;
+//
+//    @Column(name = &quot;Status&quot;, nullable = false)
+//    private String status = &quot;ACTIVE&quot;;
+//
+////    @Column(name = &quot;IsActive&quot;, nullable = false)
+////    private boolean isActive = true;
+//
+////    @Column(name = &quot;IsDeleted&quot;, nullable = false)
+////    private boolean isDeleted = false;
+//
+////    @Column(name = &quot;HireDate&quot;)
+////    private Date hireDate;
+//
+//    @Column(name = &quot;CreatedAt&quot;, updatable = false)
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private Date createdAt = new Date();
+//
+////    @Column(name = &quot;UpdatedDateTime&quot;)
+////    @Temporal(TemporalType.TIMESTAMP)
+////    private Date updatedDateTime;
+////
+////    @Column(name = &quot;UpdatedBy&quot;)
+////    private String updatedBy;
+//
+//    public int getEmployeeID() {
+//        return employeeID;
+//    }
+//
+//    public void setEmployeeID(int employeeID) {
+//        this.employeeID = employeeID;
+//    }
+//
+//    public String getEmployeeNumber() {
+//        return employeeNumber;
+//    }
+//
+//    public void setEmployeeNumber(String employeeNumber) {
+//        this.employeeNumber = employeeNumber;
+//    }
+//
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
+//
+//    public String getUsername() {
+//        return username;
+//    }
+//
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+//
+//    public EmployeeRole getRole() {
+//        return role;
+//    }
+//
+//    public void setRole(EmployeeRole role) {
+//        this.role = role;
+//    }
+//
+//    public String getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
+//
+//    public boolean isActive() {
+//        return isActive;
+//    }
+//
+//    public void setActive(boolean active) {
+//        isActive = active;
+//    }
+//
+//    public boolean isDeleted() {
+//        return isDeleted;
+//    }
+//
+//    public void setDeleted(boolean deleted) {
+//        isDeleted = deleted;
+//    }
+//
+//    public Date getHireDate() {
+//        return hireDate;
+//    }
+//
+//    public void setHireDate(Date hireDate) {
+//        this.hireDate = hireDate;
+//    }
+//
+//    public Date getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public void setCreatedAt(Date createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public Date getUpdatedDateTime() {
+//        return updatedDateTime;
+//    }
+//
+//    public void setUpdatedDateTime(Date updatedDateTime) {
+//        this.updatedDateTime = updatedDateTime;
+//    }
+//
+//    public String getUpdatedBy() {
+//        return updatedBy;
+//    }
+//
+//    public void setUpdatedBy(String updatedBy) {
+//        this.updatedBy = updatedBy;
+//    }
+//}
+
+package com.syos.domain.entity;
+
+import java.util.Date;
+
+<span class="fc" id="L164">public class Employee {</span>
+
+    private String employeeID;
+    private String email;
+    private String username;
+    private String password;
+    private EmployeeRole role;
+<span class="fc" id="L171">    private String status = &quot;ACTIVE&quot;;</span>
+<span class="fc" id="L172">    private Date createdAt = new Date();</span>
+
+    public String getEmployeeID() {
+<span class="fc" id="L175">        return employeeID;</span>
+    }
+
+    public void setEmployeeID(String employeeID) {
+<span class="fc" id="L179">        this.employeeID = employeeID;</span>
+<span class="fc" id="L180">    }</span>
+
+    public String getEmail() {
+<span class="nc" id="L183">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="fc" id="L187">        this.email = email;</span>
+<span class="fc" id="L188">    }</span>
+
+    public String getUsername() {
+<span class="nc" id="L191">        return username;</span>
+    }
+
+    public void setUsername(String username) {
+<span class="fc" id="L195">        this.username = username;</span>
+<span class="fc" id="L196">    }</span>
+
+    public String getPassword() {
+<span class="fc" id="L199">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="fc" id="L203">        this.password = password;</span>
+<span class="fc" id="L204">    }</span>
+
+    public EmployeeRole getRole() {
+<span class="nc" id="L207">        return role;</span>
+    }
+
+    public void setRole(EmployeeRole role) {
+<span class="fc" id="L211">        this.role = role;</span>
+<span class="fc" id="L212">    }</span>
+
+    public String getStatus() {
+<span class="nc" id="L215">        return status;</span>
+    }
+
+    public void setStatus(String status) {
+<span class="fc" id="L219">        this.status = status;</span>
+<span class="fc" id="L220">    }</span>
+
+    public Date getCreatedAt() {
+<span class="nc" id="L223">        return createdAt;</span>
+    }
+
+    public void setCreatedAt(Date createdAt) {
+<span class="fc" id="L227">        this.createdAt = createdAt;</span>
+<span class="fc" id="L228">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

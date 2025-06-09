@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TotalSaleReport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.reports.totalsale</a> &gt; <span class="el_source">TotalSaleReport.java</span></div><h1>TotalSaleReport.java</h1><pre class="source lang-java linenums">package com.syos.application.reports.totalsale;
+
+import com.syos.application.reports.template.ReportTemplate;
+import com.syos.application.reports.totalsale.fetch.TotalSaleFetchStrategy;
+import com.syos.application.reports.data.TotalSaleReportDTO;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+public class TotalSaleReport extends ReportTemplate&lt;TotalSaleReportDTO&gt; {
+
+    private final TotalSaleFetchStrategy fetchStrategy;
+    private final LocalDate reportDate;
+
+    private int totalItemsSold;
+    private BigDecimal totalRevenue;
+
+    private TotalSaleReportDTO topSeller;
+    private TotalSaleReportDTO topRevenueItem;
+
+<span class="fc" id="L22">    public TotalSaleReport(TotalSaleFetchStrategy fetchStrategy, LocalDate reportDate) {</span>
+<span class="fc" id="L23">        this.fetchStrategy = fetchStrategy;</span>
+<span class="fc" id="L24">        this.reportDate = reportDate;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    protected List&lt;TotalSaleReportDTO&gt; fetchData() {
+<span class="fc" id="L29">        return fetchStrategy.fetch(reportDate);</span>
+    }
+
+    @Override
+    protected void aggregate(List&lt;TotalSaleReportDTO&gt; data) {
+<span class="fc" id="L34">        totalItemsSold = 0;</span>
+<span class="fc" id="L35">        totalRevenue = BigDecimal.ZERO;</span>
+<span class="fc" id="L36">        topSeller = null;</span>
+<span class="fc" id="L37">        topRevenueItem = null;</span>
+
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        for (TotalSaleReportDTO item : data) {</span>
+<span class="nc" id="L40">            totalItemsSold += item.getTotalQuantity();</span>
+<span class="nc" id="L41">            totalRevenue = totalRevenue.add(item.getTotalRevenue());</span>
+
+<span class="nc bnc" id="L43" title="All 4 branches missed.">            if (topSeller == null || item.getTotalQuantity() &gt; topSeller.getTotalQuantity()) {</span>
+<span class="nc" id="L44">                topSeller = item;</span>
+            }
+
+<span class="nc bnc" id="L47" title="All 4 branches missed.">            if (topRevenueItem == null || item.getTotalRevenue().compareTo(topRevenueItem.getTotalRevenue()) &gt; 0) {</span>
+<span class="nc" id="L48">                topRevenueItem = item;</span>
+            }
+<span class="nc" id="L50">        }</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    protected void present(List&lt;TotalSaleReportDTO&gt; data) {
+<span class="fc" id="L55">        final int WIDTH = 90;</span>
+<span class="fc" id="L56">        final int INNER_WIDTH = WIDTH - 2;</span>
+<span class="fc" id="L57">        String horizontal = &quot;═&quot;.repeat(INNER_WIDTH);</span>
+<span class="fc" id="L58">        String dashed = &quot;─&quot;.repeat(INNER_WIDTH);</span>
+
+<span class="fc" id="L60">        System.out.println(&quot;╔&quot; + horizontal + &quot;╗&quot;);</span>
+<span class="fc" id="L61">        System.out.printf(&quot;║ %-84s ║\n&quot;, &quot;📊 TOTAL SALES REPORT — &quot; + reportDate);</span>
+<span class="fc" id="L62">        System.out.println(&quot;╠&quot; + horizontal + &quot;╣&quot;);</span>
+<span class="fc" id="L63">        System.out.printf(&quot;║ %-25s │ %-25s │ %10s │ %-14s ║\n&quot;, &quot;Item Code&quot;, &quot;Item Name&quot;, &quot;Qty&quot;, &quot;Revenue&quot;);</span>
+<span class="fc" id="L64">        System.out.println(&quot;╟&quot; + dashed + &quot;╢&quot;);</span>
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        for (TotalSaleReportDTO item : data) {</span>
+<span class="nc" id="L67">            String name = item.getItemName();</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (name.length() &gt; 25) name = name.substring(0, 22) + &quot;...&quot;;</span>
+<span class="nc" id="L69">            System.out.printf(&quot;║ %-25s │ %-25s │ %10d │ Rs. %12.2f ║\n&quot;,</span>
+<span class="nc" id="L70">                    item.getItemCode(), name, item.getTotalQuantity(), item.getTotalRevenue());</span>
+<span class="nc" id="L71">        }</span>
+
+<span class="fc" id="L73">        System.out.println(&quot;╠&quot; + horizontal + &quot;╣&quot;);</span>
+<span class="fc" id="L74">        System.out.printf(&quot;║ %-65s : %8d ║\n&quot;, &quot; Total Items Sold&quot;, totalItemsSold);</span>
+<span class="fc" id="L75">        System.out.printf(&quot;║ %-65s : Rs. %12.2f ║\n&quot;, &quot; Total Revenue&quot;, totalRevenue);</span>
+<span class="fc" id="L76">        System.out.println(&quot;╠&quot; + horizontal + &quot;╣&quot;);</span>
+
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (topSeller != null) {</span>
+<span class="nc" id="L79">            String name = topSeller.getItemName();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (name.length() &gt; 25) name = name.substring(0, 22) + &quot;...&quot;;</span>
+<span class="nc" id="L81">            System.out.printf(&quot;║  Top Seller     : %-25s (%s) - Qty: %4d      ║\n&quot;,</span>
+<span class="nc" id="L82">                    name, topSeller.getItemCode(), topSeller.getTotalQuantity());</span>
+        }
+
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (topRevenueItem != null) {</span>
+<span class="nc" id="L86">            String name = topRevenueItem.getItemName();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (name.length() &gt; 25) name = name.substring(0, 22) + &quot;...&quot;;</span>
+<span class="nc" id="L88">            System.out.printf(&quot;║  Top Revenue    : %-25s (%s) - Rs. %10.2f ║\n&quot;,</span>
+<span class="nc" id="L89">                    name, topRevenueItem.getItemCode(), topRevenueItem.getTotalRevenue());</span>
+        }
+
+<span class="fc" id="L92">        System.out.println(&quot;╚&quot; + horizontal + &quot;╝&quot;);</span>
+<span class="fc" id="L93">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

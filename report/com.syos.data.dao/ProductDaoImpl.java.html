@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">ProductDaoImpl.java</span></div><h1>ProductDaoImpl.java</h1><pre class="source lang-java linenums">
+package com.syos.data.dao;
+
+import com.syos.data.dao.interfaces.ProductDao;
+import com.syos.domain.entity.Product;
+import com.syos.domain.entity.ProductStatus;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+<span class="nc" id="L13">public class ProductDaoImpl implements ProductDao {</span>
+
+    @Override
+    public void save(Connection conn, Product product) throws SQLException {
+<span class="nc" id="L17">        String sql = &quot;INSERT INTO Product (ItemCode, ItemName, Price, UpdatedDateTime, UpdatedBy, Status, ReorderLevel) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="nc" id="L18">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L19">            stmt.setString(1, product.getItemCode());</span>
+<span class="nc" id="L20">            stmt.setString(2, product.getItemName());</span>
+<span class="nc" id="L21">            stmt.setDouble(3, product.getPrice());</span>
+<span class="nc" id="L22">            stmt.setTimestamp(4, Timestamp.valueOf(product.getUpdatedDateTime()));</span>
+<span class="nc" id="L23">            stmt.setString(5, product.getUpdatedBy());</span>
+<span class="nc" id="L24">            stmt.setString(6, ProductStatus.ACTIVE.name());</span>
+
+            // ✅ Reorder Level (can be null)
+<span class="nc bnc" id="L27" title="All 2 branches missed.">            if (product.getReorderLevel() != null) {</span>
+<span class="nc" id="L28">                stmt.setInt(7, product.getReorderLevel());</span>
+            } else {
+<span class="nc" id="L30">                stmt.setNull(7, Types.INTEGER);</span>
+            }
+
+<span class="nc" id="L33">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L35">    }</span>
+
+    @Override
+    public Optional&lt;Product&gt; findByItemCode(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L39">        String sql = &quot;SELECT * FROM Product WHERE ItemCode = ?&quot;;</span>
+<span class="nc" id="L40">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L41">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L42">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                return rs.next() ? Optional.of(mapResultSetToEntity(rs)) : Optional.empty();</span>
+            }
+        }
+    }
+
+    @Override
+    public List&lt;Product&gt; findAll(Connection conn) throws SQLException {
+<span class="nc" id="L50">        String sql = &quot;SELECT * FROM Product&quot;;</span>
+<span class="nc" id="L51">        List&lt;Product&gt; products = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L52">        try (PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="nc" id="L53">             ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc" id="L55">                products.add(mapResultSetToEntity(rs));</span>
+            }
+        }
+<span class="nc" id="L58">        return products;</span>
+    }
+
+    @Override
+    public void update(Connection conn, Product product) throws SQLException {
+<span class="nc" id="L63">        String sql = &quot;UPDATE Product SET ItemName = ?, Price = ?, UpdatedDateTime = ?, UpdatedBy = ?, Status = ? WHERE ItemCode = ?&quot;;</span>
+<span class="nc" id="L64">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L65">            stmt.setString(1, product.getItemName());</span>
+<span class="nc" id="L66">            stmt.setDouble(2, product.getPrice());</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            stmt.setTimestamp(3, product.getUpdatedDateTime() != null ? Timestamp.valueOf(product.getUpdatedDateTime()) : null);</span>
+<span class="nc" id="L68">            stmt.setString(4, product.getUpdatedBy());</span>
+<span class="nc" id="L69">            stmt.setString(5, product.getStatus().name());</span>
+<span class="nc" id="L70">            stmt.setString(6, product.getItemCode());</span>
+<span class="nc" id="L71">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L73">    }</span>
+//
+//    @Override
+//    public void deleteByItemCode(Connection conn, String itemCode) throws SQLException {
+//        String sql = &quot;UPDATE Product SET Status = ProductStatus.DELETED&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, itemCode);
+//            stmt.executeUpdate();
+//        }
+//    }
+
+    private Product mapResultSetToEntity(ResultSet rs) throws SQLException {
+<span class="nc" id="L85">        Product product = new Product();</span>
+<span class="nc" id="L86">        product.setItemCode(rs.getString(&quot;ItemCode&quot;));</span>
+<span class="nc" id="L87">        product.setItemName(rs.getString(&quot;ItemName&quot;));</span>
+<span class="nc" id="L88">        product.setPrice(rs.getDouble(&quot;Price&quot;));</span>
+<span class="nc" id="L89">        Timestamp ts = rs.getTimestamp(&quot;UpdatedDateTime&quot;);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        product.setUpdatedDateTime(ts != null ? ts.toLocalDateTime() : null);</span>
+<span class="nc" id="L91">        product.setUpdatedBy(rs.getString(&quot;UpdatedBy&quot;));</span>
+<span class="nc" id="L92">        product.setStatus(ProductStatus.valueOf(rs.getString(&quot;Status&quot;)));</span>
+<span class="nc" id="L93">        return product;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

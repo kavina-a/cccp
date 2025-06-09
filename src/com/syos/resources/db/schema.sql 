@@ -1,0 +1,154 @@
+-- Customer Table
+CREATE TABLE Customer (
+  CustomerID INT AUTO_INCREMENT PRIMARY KEY,
+  Name VARCHAR(100) NOT NULL,
+  Email VARCHAR(100) NOT NULL UNIQUE,
+  Username VARCHAR(50) NOT NULL,
+  Address VARCHAR(255),
+  RegistrationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  Password VARCHAR(255) NOT NULL
+);
+
+-- Employee Table
+CREATE TABLE Employee (
+  EmployeeID INT PRIMARY KEY,
+  Email VARCHAR(255) NOT NULL,
+  Username VARCHAR(100) NOT NULL UNIQUE,
+  Password VARCHAR(255) NOT NULL,
+  Role VARCHAR(50) NOT NULL,
+  Status VARCHAR(50) DEFAULT 'ACTIVE',
+  CreatedAt TIMESTAMP NOT NULL
+);
+
+-- Product Table
+CREATE TABLE `Product` (
+  `ItemCode` VARCHAR(50) NOT NULL,
+  `ItemName` VARCHAR(100) NOT NULL,
+  `Price` DOUBLE NOT NULL,
+  `IsActive` TINYINT(1) NOT NULL DEFAULT '1',
+  `IsDeleted` TINYINT(1) NOT NULL DEFAULT '0',
+  `UpdatedDateTime` TIMESTAMP NULL DEFAULT NULL,
+  `UpdatedBy` INT DEFAULT NULL,
+  `Status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `ReorderLevel` INT DEFAULT NULL,
+  PRIMARY KEY (`ItemCode`),
+  FOREIGN KEY (`UpdatedBy`) REFERENCES `Employee` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- WebProduct Table
+CREATE TABLE `WebProduct` (
+  `itemCode` VARCHAR(50) NOT NULL,
+  `itemName` VARCHAR(100) NOT NULL,
+  `price` DECIMAL(10,2) NOT NULL,
+  `status` VARCHAR(20) NOT NULL,
+  `lastUpdated` DATETIME NOT NULL,
+  PRIMARY KEY (`itemCode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Bill Table
+CREATE TABLE `Bill` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `serialNumber` INT NOT NULL,
+  `billDate` DATE NOT NULL,
+  `totalAmount` DECIMAL(10,2) NOT NULL,
+  `cashTendered` DECIMAL(10,2) DEFAULT NULL,
+  `changeAmount` DECIMAL(10,2) DEFAULT NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `billType` VARCHAR(50) DEFAULT NULL,
+  `customerID` INT DEFAULT NULL,
+  `paymentMethod` VARCHAR(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_serial_billdate` (`serialNumber`, `billDate`),
+  FOREIGN KEY (`customerID`) REFERENCES `Customer` (`CustomerID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- BillItem Table
+CREATE TABLE `BillItem` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `itemCode` VARCHAR(50) NOT NULL,
+  `quantity` INT NOT NULL,
+  `price` DECIMAL(10,2) NOT NULL,
+  `billId` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`itemCode`) REFERENCES `Product` (`ItemCode`),
+  FOREIGN KEY (`billId`) REFERENCES `Bill` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- StoreStock Table
+CREATE TABLE `StoreStock` (
+  `ItemCode` VARCHAR(50) NOT NULL,
+  `BatchCode` VARCHAR(50) NOT NULL,
+  `InitialStock` INT NOT NULL,
+  `CurrentStock` INT NOT NULL,
+  `ExpiryDate` DATETIME DEFAULT NULL,
+  `ReceivedDate` DATETIME DEFAULT NULL,
+  `Status` VARCHAR(20) DEFAULT 'ACTIVE',
+  `UpdatedBy` INT DEFAULT NULL,
+  `UpdatedDateTime` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`ItemCode`, `BatchCode`),
+  FOREIGN KEY (`ItemCode`) REFERENCES `Product` (`ItemCode`),
+  FOREIGN KEY (`UpdatedBy`) REFERENCES `Employee` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Shelf Table
+CREATE TABLE `Shelf` (
+  `ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `ShelfID` VARCHAR(50) NOT NULL,
+  `ItemCode` VARCHAR(50) NOT NULL,
+  `QuantityOnShelf` INT NOT NULL,
+  `Location` VARCHAR(100) DEFAULT NULL,
+  `Status` VARCHAR(20) DEFAULT 'ACTIVE',
+  `UpdatedBy` INT DEFAULT NULL,
+  `UpdatedAt` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `ShelfID` (`ShelfID`),
+  FOREIGN KEY (`ItemCode`) REFERENCES `Product` (`ItemCode`),
+  FOREIGN KEY (`UpdatedBy`) REFERENCES `Employee` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ShelfInventory Table
+CREATE TABLE `ShelfInventory` (
+  `ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `ItemCode` VARCHAR(50) NOT NULL,
+  `BatchCode` VARCHAR(50) NOT NULL,
+  `ShelfID` VARCHAR(50) NOT NULL,
+  `QuantityTransferred` INT NOT NULL,
+  `QuantityRemaining` INT NOT NULL,
+  `MovedDate` DATETIME NOT NULL,
+  `UpdatedBy` INT DEFAULT NULL,
+  `Status` VARCHAR(20) DEFAULT 'ACTIVE',
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`ItemCode`) REFERENCES `Product` (`ItemCode`),
+  FOREIGN KEY (`ShelfID`) REFERENCES `Shelf` (`ShelfID`),
+  FOREIGN KEY (`ItemCode`, `BatchCode`) REFERENCES `StoreStock` (`ItemCode`, `BatchCode`),
+  FOREIGN KEY (`UpdatedBy`) REFERENCES `Employee` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- WebInventory Table
+CREATE TABLE `WebInventory` (
+  `itemCode` VARCHAR(50) NOT NULL,
+  `batchCode` VARCHAR(50) NOT NULL,
+  `quantityRemaining` INT NOT NULL,
+  `quantityTransferred` INT NOT NULL,
+  `transferredDate` DATETIME NOT NULL,
+  `status` VARCHAR(20) NOT NULL,
+  `updatedDateTime` DATETIME NOT NULL,
+  `lastUpdatedBy` INT DEFAULT NULL,
+  PRIMARY KEY (`itemCode`, `batchCode`),
+  FOREIGN KEY (`itemCode`) REFERENCES `WebProduct` (`itemCode`),
+  FOREIGN KEY (`itemCode`, `batchCode`) REFERENCES `StoreStock` (`ItemCode`, `BatchCode`),
+  FOREIGN KEY (`lastUpdatedBy`) REFERENCES `Employee` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- BusinessDayLog Table
+CREATE TABLE BusinessDayLog (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  businessDate DATE NOT NULL,
+  startTime DATETIME,
+  endTime DATETIME,
+  isClosed BOOLEAN DEFAULT FALSE,
+  openedById INT,
+  closedById INT,
+  CONSTRAINT fk_openedBy FOREIGN KEY (openedById) REFERENCES Employee(employeeID),
+  CONSTRAINT fk_closedBy FOREIGN KEY (closedById) REFERENCES Employee(employeeID)
+);

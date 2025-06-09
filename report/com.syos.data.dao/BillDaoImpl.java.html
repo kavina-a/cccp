@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BillDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">BillDaoImpl.java</span></div><h1>BillDaoImpl.java</h1><pre class="source lang-java linenums">package com.syos.data.dao;
+
+import com.syos.application.dto.BillReceiptDTO;
+import com.syos.application.reports.data.BillReportDTO;
+import com.syos.data.dao.interfaces.BillDao;
+import com.syos.domain.entity.Bill;
+import com.syos.domain.entity.BillType;
+import com.syos.utils.SQLTransactionManager;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+<span class="nc" id="L16">public class BillDaoImpl implements BillDao {</span>
+
+    @Override
+    public void save(Connection conn, Bill bill) throws SQLException {
+<span class="nc" id="L20">        String sql = &quot;INSERT INTO Bill (serialNumber, billDate, totalAmount, cashTendered, changeAmount, createdAt, billType, customerID, paymentMethod) &quot; +</span>
+                &quot;VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)&quot;;
+<span class="nc" id="L22">        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+<span class="nc" id="L23">            stmt.setInt(1, bill.getSerialNumber());</span>
+<span class="nc" id="L24">            stmt.setDate(2, Date.valueOf(bill.getBillDate()));</span>
+<span class="nc" id="L25">            stmt.setBigDecimal(3, bill.getTotalAmount());</span>
+<span class="nc" id="L26">            stmt.setBigDecimal(4, bill.getCashTendered());</span>
+<span class="nc" id="L27">            stmt.setBigDecimal(5, bill.getChangeAmount());</span>
+<span class="nc" id="L28">            stmt.setTimestamp(6, Timestamp.valueOf(bill.getCreatedAt()));</span>
+<span class="nc" id="L29">            stmt.setString(7, bill.getBillType().name());</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            stmt.setString(8, bill.getCustomer() != null ? bill.getCustomer().getCustomerID() : &quot;WALK-IN&quot;);</span>
+<span class="nc" id="L31">            stmt.setString(9, bill.getPaymentMethod().name());</span>
+<span class="nc" id="L32">            stmt.executeUpdate();</span>
+
+<span class="nc" id="L34">            try (ResultSet rs = stmt.getGeneratedKeys()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L36">                    bill.setId(rs.getInt(1));</span>
+                }
+            }
+        }
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    public List&lt;BillReceiptDTO&gt; findBillReceipt(Connection conn, LocalDate billDate, int serialNumber) throws SQLException {
+<span class="nc" id="L44">        String sql = &quot;&quot;&quot;</span>
+                    SELECT
+                      b.serialNumber,
+                      b.billDate,
+                      b.totalAmount,
+                      b.cashTendered,
+                      b.changeAmount,
+                      i.itemCode,
+                      p.itemName,
+                      i.quantity,
+                      i.price,
+                      (i.quantity * i.price) AS totalItemPrice
+                    FROM Bill b
+                    JOIN BillItem i ON i.billId = b.id
+                    JOIN Product p ON p.itemCode = i.itemCode
+                    WHERE b.billDate = ? AND b.serialNumber = ?
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L62">        List&lt;BillReceiptDTO&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L64">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L65">            stmt.setDate(1, Date.valueOf(billDate));</span>
+<span class="nc" id="L66">            stmt.setInt(2, serialNumber);</span>
+
+<span class="nc" id="L68">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L70">                    BillReceiptDTO dto = new BillReceiptDTO();</span>
+<span class="nc" id="L71">                    dto.setSerialNumber(rs.getInt(&quot;serialNumber&quot;));</span>
+<span class="nc" id="L72">                    dto.setBillDate(rs.getDate(&quot;billDate&quot;).toLocalDate());</span>
+<span class="nc" id="L73">                    dto.setTotalAmount(rs.getBigDecimal(&quot;totalAmount&quot;));</span>
+<span class="nc" id="L74">                    dto.setCashTendered(rs.getBigDecimal(&quot;cashTendered&quot;));</span>
+<span class="nc" id="L75">                    dto.setChangeAmount(rs.getBigDecimal(&quot;changeAmount&quot;));</span>
+<span class="nc" id="L76">                    dto.setItemCode(rs.getString(&quot;itemCode&quot;));</span>
+<span class="nc" id="L77">                    dto.setItemName(rs.getString(&quot;itemName&quot;));</span>
+<span class="nc" id="L78">                    dto.setQuantity(rs.getInt(&quot;quantity&quot;));</span>
+<span class="nc" id="L79">                    dto.setPrice(rs.getBigDecimal(&quot;price&quot;));</span>
+<span class="nc" id="L80">                    dto.setTotalItemPrice(rs.getBigDecimal(&quot;totalItemPrice&quot;));</span>
+<span class="nc" id="L81">                    result.add(dto);</span>
+<span class="nc" id="L82">                }</span>
+            }
+        }
+<span class="nc" id="L85">        return result;</span>
+    }
+
+
+    @Override
+    public Optional&lt;Bill&gt; findByBillDateAndSerialNumber(Connection conn, LocalDate billDate, int serialNumber) throws SQLException {
+<span class="nc" id="L91">        String sql = &quot;SELECT * FROM Bill WHERE billDate = ? AND serialNumber = ?&quot;;</span>
+<span class="nc" id="L92">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L93">            stmt.setDate(1, Date.valueOf(billDate));</span>
+<span class="nc" id="L94">            stmt.setInt(2, serialNumber);</span>
+<span class="nc" id="L95">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L97">                    Bill bill = new Bill();</span>
+<span class="nc" id="L98">                    bill.setId(rs.getInt(&quot;id&quot;));</span>
+<span class="nc" id="L99">                    bill.setSerialNumber(rs.getInt(&quot;serialNumber&quot;));</span>
+<span class="nc" id="L100">                    bill.setBillDate(rs.getDate(&quot;billDate&quot;).toLocalDate());</span>
+<span class="nc" id="L101">                    bill.setTotalAmount(rs.getBigDecimal(&quot;totalAmount&quot;));</span>
+<span class="nc" id="L102">                    bill.setCashTendered(rs.getBigDecimal(&quot;cashTendered&quot;));</span>
+<span class="nc" id="L103">                    bill.setChangeAmount(rs.getBigDecimal(&quot;changeAmount&quot;));</span>
+<span class="nc" id="L104">                    bill.setCreatedAt(rs.getTimestamp(&quot;createdAt&quot;).toLocalDateTime());</span>
+<span class="nc" id="L105">                    bill.setBillType(BillType.valueOf(rs.getString(&quot;billType&quot;)));</span>
+<span class="nc" id="L106">                    return Optional.of(bill);</span>
+                }
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        }</span>
+<span class="nc" id="L110">        return Optional.empty();</span>
+    }
+
+    @Override
+    public int getNextSerialNumber(Connection conn, LocalDate billDate) throws SQLException {
+<span class="nc" id="L115">        String sql = &quot;SELECT MAX(serialNumber) FROM Bill WHERE billDate = ?&quot;;</span>
+<span class="nc" id="L116">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L117">            stmt.setDate(1, Date.valueOf(billDate));</span>
+<span class="nc" id="L118">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L120">                    return rs.getInt(1) + 1;</span>
+                }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        }</span>
+<span class="nc" id="L124">        return 1;</span>
+    }
+
+    @Override
+    public List&lt;Bill&gt; findByType(Connection conn, BillType billType) throws SQLException {
+<span class="nc" id="L129">        List&lt;Bill&gt; bills = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L130">        String sql = &quot;SELECT * FROM Bill WHERE billType = ?&quot;;</span>
+<span class="nc" id="L131">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L132">            stmt.setString(1, billType.name());</span>
+<span class="nc" id="L133">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L135">                    Bill bill = new Bill();</span>
+<span class="nc" id="L136">                    bill.setId(rs.getInt(&quot;id&quot;));</span>
+<span class="nc" id="L137">                    bill.setSerialNumber(rs.getInt(&quot;serialNumber&quot;));</span>
+<span class="nc" id="L138">                    bill.setBillDate(rs.getDate(&quot;billDate&quot;).toLocalDate());</span>
+<span class="nc" id="L139">                    bill.setTotalAmount(rs.getBigDecimal(&quot;totalAmount&quot;));</span>
+<span class="nc" id="L140">                    bill.setBillType(BillType.valueOf(rs.getString(&quot;billType&quot;)));</span>
+<span class="nc" id="L141">                    bills.add(bill);</span>
+<span class="nc" id="L142">                }</span>
+            }
+        }
+<span class="nc" id="L145">        return bills;</span>
+    }
+
+    @Override
+    public List&lt;Bill&gt; findAll(Connection conn) throws SQLException {
+<span class="nc" id="L150">        List&lt;Bill&gt; bills = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L151">        String sql = &quot;SELECT * FROM Bill&quot;;</span>
+<span class="nc" id="L152">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L153">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L155">                    Bill bill = new Bill();</span>
+<span class="nc" id="L156">                    bill.setId(rs.getInt(&quot;id&quot;));</span>
+<span class="nc" id="L157">                    bill.setSerialNumber(rs.getInt(&quot;serialNumber&quot;));</span>
+<span class="nc" id="L158">                    bill.setBillDate(rs.getDate(&quot;billDate&quot;).toLocalDate());</span>
+<span class="nc" id="L159">                    bill.setTotalAmount(rs.getBigDecimal(&quot;totalAmount&quot;));</span>
+<span class="nc" id="L160">                    bill.setBillType(BillType.valueOf(rs.getString(&quot;billType&quot;)));</span>
+<span class="nc" id="L161">                    bills.add(bill);</span>
+<span class="nc" id="L162">                }</span>
+            }
+        }
+<span class="nc" id="L165">        return bills;</span>
+    }
+
+    @Override
+    public List&lt;BillReportDTO&gt; fetchBillReports() throws SQLException {
+<span class="nc" id="L170">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L171">            String sql = &quot;&quot;&quot;</span>
+                        SELECT 
+                            b.serialNumber,
+                            b.billDate,
+                            b.customerID,
+                            b.billType AS transactionType,
+                            SUM(bi.quantity) AS totalItems,
+                            b.totalAmount,
+                            b.cashTendered,
+                            b.changeAmount
+                        FROM 
+                            Bill b
+                        LEFT JOIN 
+                            BillItem bi ON b.id = bi.billId
+                        GROUP BY 
+                            b.id
+                        
+                    &quot;&quot;&quot;;
+
+<span class="nc" id="L190">            List&lt;BillReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L191">            try (PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="nc" id="L192">                 ResultSet rs = stmt.executeQuery()) {</span>
+
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L195">                    String billIdentifier = rs.getInt(&quot;serialNumber&quot;) + &quot;-&quot; + rs.getDate(&quot;billDate&quot;).toLocalDate();</span>
+<span class="nc" id="L196">                    result.add(new BillReportDTO(</span>
+                            billIdentifier,
+<span class="nc" id="L198">                            rs.getString(&quot;customerID&quot;),</span>
+<span class="nc" id="L199">                            rs.getString(&quot;transactionType&quot;),</span>
+<span class="nc" id="L200">                            rs.getInt(&quot;totalItems&quot;),</span>
+<span class="nc" id="L201">                            rs.getBigDecimal(&quot;totalAmount&quot;),</span>
+<span class="nc" id="L202">                            rs.getBigDecimal(&quot;cashTendered&quot;),</span>
+<span class="nc" id="L203">                            rs.getBigDecimal(&quot;changeAmount&quot;)</span>
+                    ));
+<span class="nc" id="L205">                }</span>
+            }
+
+<span class="nc" id="L208">            return result;</span>
+        });
+    }
+
+        @Override
+        public List&lt;BillReportDTO&gt; fetchBillsByType(BillType type) throws SQLException {
+<span class="nc" id="L214">            return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L215">                String sql = &quot;&quot;&quot;</span>
+                SELECT 
+                    b.serialNumber,
+                    b.billDate,
+                    b.customerID,
+                    b.billType AS transactionType,
+                    SUM(bi.quantity) AS totalItems,
+                    b.totalAmount,
+                    b.cashTendered,
+                    b.changeAmount
+                FROM 
+                    Bill b
+                LEFT JOIN 
+                    BillItem bi ON b.id = bi.billId
+                WHERE 
+                    b.billType = ?
+                GROUP BY 
+                    b.id
+            &quot;&quot;&quot;;
+
+<span class="nc" id="L235">                List&lt;BillReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L236">                try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L237">                    stmt.setString(1, type.name());</span>
+
+<span class="nc" id="L239">                    try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                        while (rs.next()) {</span>
+<span class="nc" id="L241">                            String billIdentifier = rs.getInt(&quot;serialNumber&quot;) + &quot;-&quot; + rs.getDate(&quot;billDate&quot;).toLocalDate();</span>
+<span class="nc" id="L242">                            result.add(new BillReportDTO(</span>
+                                    billIdentifier,
+<span class="nc" id="L244">                                    rs.getString(&quot;customerID&quot;),</span>
+<span class="nc" id="L245">                                    rs.getString(&quot;transactionType&quot;),</span>
+<span class="nc" id="L246">                                    rs.getInt(&quot;totalItems&quot;),</span>
+<span class="nc" id="L247">                                    rs.getBigDecimal(&quot;totalAmount&quot;),</span>
+<span class="nc" id="L248">                                    rs.getBigDecimal(&quot;cashTendered&quot;),</span>
+<span class="nc" id="L249">                                    rs.getBigDecimal(&quot;changeAmount&quot;)</span>
+                            ));
+<span class="nc" id="L251">                        }</span>
+                    }
+                }
+
+<span class="nc" id="L255">                return result;</span>
+            });
+        }
+    }
+
+
+//this whole distinct fetch things looks too much ekai
+//    @Override
+//    public Optional&lt;Bill&gt; findByBillDateAndSerialNumber(LocalDate billDate, int serialNumber) {
+//        return HibernateTransactionManager.execute(session -&gt;
+//                session.createQuery(
+//                                &quot;SELECT b FROM Bill b LEFT JOIN FETCH b.items WHERE b.billDate = :date AND b.serialNumber = :sn&quot;,
+//                                Bill.class
+//                        )
+//                        .setParameter(&quot;date&quot;, billDate)
+//                        .setParameter(&quot;sn&quot;, serialNumber)
+//                        .uniqueResultOptional()
+//        );
+//    }
+
+//    @Override
+//    public Optional&lt;Bill&gt; findByBillDateAndSerialNumber(Session session, LocalDate billDate, int serialNumber) {
+//        return HibernateTransactionManager.execute(session -&gt;
+//                session.createQuery(
+//                                &quot;SELECT DISTINCT b FROM Bill b &quot; +
+//                                        &quot;LEFT JOIN FETCH b.items i &quot; +
+//                                        &quot;LEFT JOIN FETCH i.product &quot; +
+//                                        &quot;WHERE b.billDate = :date AND b.serialNumber = :sn&quot;,
+//                                Bill.class
+//                        )
+//                        .setParameter(&quot;date&quot;, billDate)
+//                        .setParameter(&quot;sn&quot;, serialNumber)
+//                        .uniqueResultOptional()
+//        );
+//    }
+//
+//    @Override
+//    public int getNextSerialNumber(Session session, LocalDate billDate) {
+//        return HibernateTransactionManager.execute(session -&gt; {
+//            Integer maxSerialNumber = session.createQuery(
+//                    &quot;SELECT MAX(b.serialNumber) FROM Bill b WHERE b.billDate = :billDate&quot;, Integer.class)
+//                    .setParameter(&quot;billDate&quot;, billDate)
+//                    .uniqueResult();
+//            return (maxSerialNumber != null ? maxSerialNumber : 0) + 1;
+//        });
+//    }
+
+//    @Override
+//    public int getNextSerialNumber(LocalDate billDate, Session session) {
+//        Integer maxSerialNumber = session.createQuery(
+//                        &quot;SELECT MAX(b.serialNumber) FROM Bill b WHERE b.billDate = :billDate&quot;, Integer.class)
+//                .setParameter(&quot;billDate&quot;, billDate)
+//                .uniqueResult();
+//        return (maxSerialNumber != null ? maxSerialNumber : 0);
+//    }
+
+//    @Override
+//    public Bill findBillById(int id) {
+//        return null;
+//    }
+
+
+// add more
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestockShelfDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.dto</a> &gt; <span class="el_source">RestockShelfDTO.java</span></div><h1>RestockShelfDTO.java</h1><pre class="source lang-java linenums">package com.syos.application.dto;
+
+import java.util.List;
+
+public class RestockShelfDTO {
+    private final String itemCode;
+    private final int totalRestocked;
+    private final List&lt;String&gt; batchCodesUsed;
+    private final boolean success;
+    private final String message;
+
+<span class="nc" id="L12">    public RestockShelfDTO(String itemCode, int totalRestocked, List&lt;String&gt; batchCodesUsed, boolean success, String message) {</span>
+<span class="nc" id="L13">        this.itemCode = itemCode;</span>
+<span class="nc" id="L14">        this.totalRestocked = totalRestocked;</span>
+<span class="nc" id="L15">        this.batchCodesUsed = batchCodesUsed;</span>
+<span class="nc" id="L16">        this.success = success;</span>
+<span class="nc" id="L17">        this.message = message;</span>
+<span class="nc" id="L18">    }</span>
+
+    public String getItemCode() {
+<span class="nc" id="L21">        return itemCode;</span>
+    }
+
+    public int getTotalRestocked() {
+<span class="nc" id="L25">        return totalRestocked;</span>
+    }
+
+    public List&lt;String&gt; getBatchCodesUsed() {
+<span class="nc" id="L29">        return batchCodesUsed;</span>
+    }
+
+    public boolean isSuccess() {
+<span class="nc" id="L33">        return success;</span>
+    }
+
+    public String getMessage() {
+<span class="nc" id="L37">        return message;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

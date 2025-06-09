@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BillReceiptFormatter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.interfaces.cli.utils</a> &gt; <span class="el_source">BillReceiptFormatter.java</span></div><h1>BillReceiptFormatter.java</h1><pre class="source lang-java linenums">package com.syos.interfaces.cli.utils;
+
+import com.syos.application.dto.BillReceiptDTO;
+
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+
+<span class="nc" id="L11">public class BillReceiptFormatter {</span>
+
+<span class="nc" id="L13">    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L14">    private static final NumberFormat CURRENCY = NumberFormat.getNumberInstance(Locale.US);</span>
+
+    public static void printBillDetails(List&lt;BillReceiptDTO&gt; receipt) {
+<span class="nc bnc" id="L17" title="All 4 branches missed.">        if (receipt == null || receipt.isEmpty()) {</span>
+<span class="nc" id="L18">            System.out.println(&quot;No bill data available.&quot;);</span>
+<span class="nc" id="L19">            return;</span>
+        }
+
+<span class="nc" id="L22">        BillReceiptDTO bill = receipt.get(0);</span>
+
+<span class="nc" id="L24">        System.out.println(&quot;=&quot;.repeat(50));</span>
+<span class="nc" id="L25">        System.out.println(&quot;           SYOS POINT-OF-SALE RECEIPT         &quot;);</span>
+<span class="nc" id="L26">        System.out.println(&quot;=&quot;.repeat(50));</span>
+
+<span class="nc" id="L28">        String billNo = String.format(&quot;%03d&quot;, bill.getSerialNumber());</span>
+<span class="nc" id="L29">        String billDate = bill.getBillDate().format(DATE_FORMAT);</span>
+<span class="nc" id="L30">        System.out.printf(&quot;Bill No: %s/%s%n&quot;, billDate, billNo);</span>
+
+<span class="nc" id="L32">        System.out.println(&quot;\nItems:&quot;);</span>
+<span class="nc" id="L33">        System.out.println(&quot;-&quot;.repeat(50));</span>
+<span class="nc" id="L34">        System.out.printf(&quot;%-20s %-6s %-10s %-10s%n&quot;, &quot;Item Name&quot;, &quot;Qty&quot;, &quot;Price&quot;, &quot;Subtotal&quot;);</span>
+<span class="nc" id="L35">        System.out.println(&quot;-&quot;.repeat(50));</span>
+
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        for (BillReceiptDTO item : receipt) {</span>
+<span class="nc" id="L38">            String name = item.getItemName();</span>
+<span class="nc" id="L39">            int qty = item.getQuantity();</span>
+<span class="nc" id="L40">            BigDecimal price = item.getPrice();</span>
+<span class="nc" id="L41">            BigDecimal subtotal = item.getTotalItemPrice();</span>
+
+<span class="nc" id="L43">            System.out.printf(&quot;%-20s %-6d %-10s %-10s%n&quot;,</span>
+                    name,
+<span class="nc" id="L45">                    qty,</span>
+<span class="nc" id="L46">                    formatCurrency(price),</span>
+<span class="nc" id="L47">                    formatCurrency(subtotal));</span>
+<span class="nc" id="L48">        }</span>
+
+<span class="nc" id="L50">        System.out.println(&quot;-&quot;.repeat(50));</span>
+<span class="nc" id="L51">        System.out.printf(&quot;Total:%35s%n&quot;, formatCurrency(bill.getTotalAmount()));</span>
+<span class="nc" id="L52">        System.out.printf(&quot;Cash Tendered:%27s%n&quot;, formatCurrency(bill.getCashTendered()));</span>
+<span class="nc" id="L53">        System.out.printf(&quot;Change:%34s%n&quot;, formatCurrency(bill.getChangeAmount()));</span>
+<span class="nc" id="L54">        System.out.println(&quot;=&quot;.repeat(50));</span>
+<span class="nc" id="L55">        System.out.println(&quot;     Thank you for shopping with us!&quot;);</span>
+<span class="nc" id="L56">        System.out.println(&quot;=&quot;.repeat(50));</span>
+<span class="nc" id="L57">    }</span>
+
+    private static String formatCurrency(BigDecimal value) {
+<span class="nc" id="L60">        return String.format(&quot;%.2f&quot;, value);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

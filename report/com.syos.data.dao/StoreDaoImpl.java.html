@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StoreDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">StoreDaoImpl.java</span></div><h1>StoreDaoImpl.java</h1><pre class="source lang-java linenums">package com.syos.data.dao;
+
+import com.syos.application.reports.data.RestockReportDTO;
+import com.syos.application.reports.data.StockReportDTO;
+import com.syos.data.dao.interfaces.StoreDao;
+import com.syos.domain.entity.StockStatus;
+import com.syos.domain.entity.StoreStock;
+import com.syos.utils.SQLTransactionManager;
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+
+<span class="nc" id="L17">public class StoreDaoImpl implements StoreDao {</span>
+
+
+    @Override
+    public void save(Connection conn, StoreStock stock) throws SQLException {
+<span class="nc" id="L22">        String sql = &quot;INSERT INTO StoreStock (ItemCode, BatchCode, InitialStock, CurrentStock, ExpiryDate, ReceivedDate, Status, UpdatedBy, UpdatedDateTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="nc" id="L23">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L24">            stmt.setString(1, stock.getItemCode());</span>
+<span class="nc" id="L25">            stmt.setString(2, stock.getBatchCode());</span>
+<span class="nc" id="L26">            stmt.setInt(3, stock.getInitialStock());</span>
+<span class="nc" id="L27">            stmt.setInt(4, stock.getCurrentStock());</span>
+<span class="nc" id="L28">            stmt.setTimestamp(5, Timestamp.valueOf(stock.getExpiryDate()));</span>
+<span class="nc" id="L29">            stmt.setTimestamp(6, Timestamp.valueOf(stock.getReceivedDate()));</span>
+<span class="nc" id="L30">            stmt.setString(7, stock.getStatus().name());</span>
+<span class="nc" id="L31">            stmt.setString(8, stock.getUpdatedBy());</span>
+<span class="nc" id="L32">            stmt.setTimestamp(9, Timestamp.valueOf(stock.getUpdatedDateTime()));</span>
+<span class="nc" id="L33">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L35">    }</span>
+
+    @Override
+    public Optional&lt;StoreStock&gt; findByItemCodeAndBatchCode(Connection conn, String itemCode, String batchCode) throws SQLException {
+<span class="nc" id="L39">        String sql = &quot;SELECT * FROM StoreStock WHERE ItemCode = ? AND BatchCode = ? AND Status = 'ACTIVE'&quot;;</span>
+<span class="nc" id="L40">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L41">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L42">            stmt.setString(2, batchCode);</span>
+<span class="nc" id="L43">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                return rs.next() ? Optional.of(map(rs)) : Optional.empty();</span>
+            }
+        }
+    }
+
+    @Override
+    public List&lt;StoreStock&gt; findByItemCode(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L51">        String sql = &quot;SELECT * FROM StoreStock WHERE ItemCode = ? AND CurrentStock &gt; 0 AND Status = 'ACTIVE'&quot;;</span>
+<span class="nc" id="L52">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L53">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L54">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc" id="L55">                List&lt;StoreStock&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L57">                    result.add(map(rs));</span>
+                }
+<span class="nc" id="L59">                return result;</span>
+            }
+        }
+    }
+
+    @Override
+    public List&lt;StoreStock&gt; findAvailableStockByItemCode(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L66">        String sql = &quot;SELECT * FROM StoreStock WHERE ItemCode = ? AND CurrentStock &gt; 0&quot;;</span>
+<span class="nc" id="L67">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L68">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L69">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc" id="L70">                List&lt;StoreStock&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L72">                    result.add(map(rs));</span>
+                }
+<span class="nc" id="L74">                return result;</span>
+            }
+        }
+    }
+
+    @Override
+    public void expireBatches(Connection conn) throws SQLException {
+<span class="nc" id="L81">        String sql = &quot;&quot;&quot;</span>
+            UPDATE StoreStock
+            SET status = 'EXPIRED'
+            WHERE expiryDate &lt;= CURRENT_DATE AND status = 'ACTIVE'
+        &quot;&quot;&quot;;
+
+<span class="nc" id="L87">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L88">            int updatedRows = stmt.executeUpdate();</span>
+<span class="nc" id="L89">            System.out.println(&quot;Expired &quot; + updatedRows + &quot; batch(es).&quot;);</span>
+        }
+<span class="nc" id="L91">    }</span>
+
+    @Override
+    public void updateStockAfterAllocation(Connection conn, String itemCode, String batchCode, int quantityToReduce) throws SQLException {
+<span class="nc" id="L95">        Optional&lt;StoreStock&gt; opt = findByItemCodeAndBatchCode(conn, itemCode, batchCode);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (opt.isEmpty())</span>
+<span class="nc" id="L97">            throw new IllegalStateException(&quot;Stock not found for itemCode: &quot; + itemCode + &quot;, batchCode: &quot; + batchCode);</span>
+
+<span class="nc" id="L99">        StoreStock stock = opt.get();</span>
+<span class="nc" id="L100">        int updatedStock = stock.getCurrentStock() - quantityToReduce;</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (updatedStock &lt; 0) throw new IllegalStateException(&quot;Negative stock error for itemCode: &quot; + itemCode);</span>
+
+<span class="nc" id="L103">        stock.setCurrentStock(updatedStock);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (updatedStock == 0) stock.setStatus(StockStatus.CONSUMED);</span>
+<span class="nc" id="L105">        stock.setUpdatedDateTime(LocalDateTime.now());</span>
+
+<span class="nc" id="L107">        String sql = &quot;UPDATE StoreStock SET CurrentStock = ?, Status = ?, UpdatedDateTime = ? WHERE ItemCode = ? AND BatchCode = ?&quot;;</span>
+<span class="nc" id="L108">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L109">            stmt.setInt(1, stock.getCurrentStock());</span>
+<span class="nc" id="L110">            stmt.setString(2, stock.getStatus().name());</span>
+<span class="nc" id="L111">            stmt.setTimestamp(3, Timestamp.valueOf(stock.getUpdatedDateTime()));</span>
+<span class="nc" id="L112">            stmt.setString(4, itemCode);</span>
+<span class="nc" id="L113">            stmt.setString(5, batchCode);</span>
+<span class="nc" id="L114">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L116">    }</span>
+
+    private StoreStock map(ResultSet rs) throws SQLException {
+<span class="nc" id="L119">        StoreStock stock = new StoreStock();</span>
+<span class="nc" id="L120">        stock.setItemCode(rs.getString(&quot;ItemCode&quot;));</span>
+<span class="nc" id="L121">        stock.setBatchCode(rs.getString(&quot;BatchCode&quot;));</span>
+<span class="nc" id="L122">        stock.setInitialStock(rs.getInt(&quot;InitialStock&quot;));</span>
+<span class="nc" id="L123">        stock.setCurrentStock(rs.getInt(&quot;CurrentStock&quot;));</span>
+<span class="nc" id="L124">        stock.setExpiryDate(rs.getTimestamp(&quot;ExpiryDate&quot;).toLocalDateTime());</span>
+<span class="nc" id="L125">        stock.setReceivedDate(rs.getTimestamp(&quot;ReceivedDate&quot;).toLocalDateTime());</span>
+<span class="nc" id="L126">        stock.setStatus(StockStatus.valueOf(rs.getString(&quot;Status&quot;)));</span>
+<span class="nc" id="L127">        stock.setUpdatedBy(rs.getString(&quot;UpdatedBy&quot;));</span>
+<span class="nc" id="L128">        stock.setUpdatedDateTime(rs.getTimestamp(&quot;UpdatedDateTime&quot;).toLocalDateTime());</span>
+<span class="nc" id="L129">        return stock;</span>
+    }
+
+    @Override
+    public List&lt;StockReportDTO&gt; fetchBatchStockReport() throws SQLException {
+<span class="nc" id="L134">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L135">            String sql = &quot;&quot;&quot;</span>
+                        SELECT 
+                            si.itemCode,
+                            p.itemName,
+                            si.batchCode,
+                            si.initialStock,
+                            si.currentStock,
+                            si.receivedDate,
+                            si.expiryDate,
+                            si.status AS statusTag
+                        FROM 
+                            StoreStock si
+                        JOIN 
+                            Product p ON si.itemCode = p.itemCode
+                        ORDER BY 
+                            si.receivedDate ASC
+                    &quot;&quot;&quot;;
+
+<span class="nc" id="L153">            List&lt;StockReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L154">            try (PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="nc" id="L155">                 ResultSet rs = stmt.executeQuery()) {</span>
+
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L158">                    StockReportDTO dto = new StockReportDTO(</span>
+<span class="nc" id="L159">                            rs.getString(&quot;itemCode&quot;),</span>
+<span class="nc" id="L160">                            rs.getString(&quot;itemName&quot;),</span>
+<span class="nc" id="L161">                            rs.getString(&quot;batchCode&quot;),</span>
+<span class="nc" id="L162">                            rs.getInt(&quot;initialStock&quot;),</span>
+<span class="nc" id="L163">                            rs.getInt(&quot;currentStock&quot;),</span>
+<span class="nc" id="L164">                            rs.getDate(&quot;receivedDate&quot;).toLocalDate(),</span>
+<span class="nc" id="L165">                            rs.getDate(&quot;expiryDate&quot;).toLocalDate(),</span>
+<span class="nc" id="L166">                            rs.getString(&quot;statusTag&quot;)</span>
+                    );
+<span class="nc" id="L168">                    result.add(dto);</span>
+<span class="nc" id="L169">                }</span>
+            }
+<span class="nc" id="L171">            return result;</span>
+        });
+    }
+
+    @Override
+    public List&lt;RestockReportDTO&gt; fetchRestockReport() throws SQLException {
+<span class="nc" id="L177">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L178">            String sql = &quot;&quot;&quot;</span>
+                    SELECT 
+                        t.ItemCode,
+                        t.ItemName,
+                        t.ReorderLevel,
+                        t.CurrentStock,
+                        (
+                            SELECT s2.InitialStock
+                            FROM StoreStock s2
+                            WHERE s2.ItemCode = t.ItemCode
+                            ORDER BY s2.ReceivedDate DESC
+                            LIMIT 1
+                        ) AS LastRestockedQty,
+                        (t.ReorderLevel - t.CurrentStock) AS ToRestock
+                    FROM (
+                        SELECT 
+                            p.ItemCode,
+                            p.ItemName,
+                            p.ReorderLevel,
+                            SUM(ss.CurrentStock) AS CurrentStock
+                        FROM 
+                            Product p
+                        JOIN 
+                            StoreStock ss ON p.ItemCode = ss.ItemCode
+                        WHERE 
+                            p.ReorderLevel IS NOT NULL
+                        GROUP BY 
+                            p.ItemCode, p.ItemName, p.ReorderLevel
+                    ) AS t
+                    WHERE 
+                        (t.ReorderLevel - t.CurrentStock) &gt; 0
+                    ORDER BY 
+                        ToRestock DESC
+                    &quot;&quot;&quot;;
+
+<span class="nc" id="L213">            try (PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="nc" id="L214">                 ResultSet rs = stmt.executeQuery()) {</span>
+
+<span class="nc" id="L216">                List&lt;RestockReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L218">                    RestockReportDTO dto = new RestockReportDTO();</span>
+<span class="nc" id="L219">                    dto.setItemCode(rs.getString(&quot;ItemCode&quot;));</span>
+<span class="nc" id="L220">                    dto.setItemName(rs.getString(&quot;ItemName&quot;));</span>
+<span class="nc" id="L221">                    dto.setReorderLevel(rs.getInt(&quot;ReorderLevel&quot;));</span>
+<span class="nc" id="L222">                    dto.setCurrentStock(rs.getInt(&quot;CurrentStock&quot;));</span>
+<span class="nc" id="L223">                    dto.setLastOrderedQuantity(rs.getInt(&quot;LastRestockedQty&quot;));</span>
+<span class="nc" id="L224">                    dto.setToRestockQuantity(rs.getInt(&quot;ToRestock&quot;));</span>
+<span class="nc" id="L225">                    result.add(dto);</span>
+<span class="nc" id="L226">                }</span>
+
+<span class="nc" id="L228">                return result;</span>
+            }
+        });
+    }
+}
+
+//previous code commented out for reference
+
+//    @Override
+//    public void save(Session session, StoreStock storeStock) {
+//        session.persist(storeStock);
+//    }
+//
+//    @Override
+//    public Optional&lt;StoreStock&gt; findByItemCodeAndBatchCode(Session session, String itemCode, String batchCode) {
+//        String hql = &quot;FROM StoreStock s WHERE s.itemCode = :itemCode AND s.batchCode = :batchCode AND s.status = :status&quot;;
+//        return session.createQuery(hql, StoreStock.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .setParameter(&quot;batchCode&quot;, batchCode)
+//                .setParameter(&quot;status&quot;, StockStatus.ACTIVE)
+//                .uniqueResultOptional();
+//    }
+//
+//    @Override
+//    public List&lt;StoreStock&gt; findByItemCode(Session session, String itemCode) {
+//        String hql = &quot;FROM StoreStock WHERE itemCode = :itemCode AND currentStock &gt; 0 AND status = :status&quot;;
+//        return session.createQuery(hql, StoreStock.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .setParameter(&quot;status&quot;, StockStatus.ACTIVE)
+//                .getResultList();
+//    }
+//
+//
+//    @Override
+//    public List&lt;StoreStock&gt; findAvailableStockByItemCode(Session session, String itemCode) {
+//        String hql = &quot;FROM StoreStock s WHERE s.itemCode = :itemCode AND s.currentStock &gt; 0&quot;;
+//        return session.createQuery(hql, StoreStock.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .getResultList();
+//    }
+//
+//    @Override
+//    public void updateStockAfterAllocation(Session session, String itemCode, String batchCode, int quantityToReduce) {
+//        String hql = &quot;FROM StoreStock s WHERE s.itemCode = :itemCode AND s.batchCode = :batchCode&quot;;
+//        StoreStock stock = session.createQuery(hql, StoreStock.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .setParameter(&quot;batchCode&quot;, batchCode)
+//                .uniqueResult();
+//
+//        if (stock == null) {
+//            throw new IllegalStateException(&quot;Stock not found for itemCode: &quot; + itemCode + &quot;, batchCode: &quot; + batchCode);
+//        }
+//
+//        int updatedStock = stock.getCurrentStock() - quantityToReduce;
+//        if (updatedStock &lt; 0) {
+//            throw new IllegalStateException(&quot;Stock would go negative for itemCode: &quot; + itemCode + &quot;, batchCode: &quot; + batchCode);
+//        }
+//
+//        stock.setCurrentStock(updatedStock);
+//
+//        if (updatedStock == 0) {
+//            stock.setStatus(StockStatus.CONSUMED);
+//        }
+//
+//        stock.setUpdatedDateTime(LocalDateTime.now());
+//        session.update(stock);
+//    }
+
+
+//    @Override
+//    public List&lt;StockReportDTO&gt; getAllStoreStock(Session session) {
+//        String hql = &quot;&quot;&quot;
+//            SELECT new StockReportDTO(
+//                s.itemCode,
+//                s.itemName,
+//                s.batchCode,
+//                s.dateOfPurchase,
+//                s.quantityReceived,
+//                s.quantityRemaining,
+//                s.expiryDate
+//            )
+//            FROM StoreStock s
+//            WHERE s.quantityRemaining &gt; 0
+//            ORDER BY s.itemCode, s.batchCode
+//        &quot;&quot;&quot;;
+//
+//        Query&lt;StockReportDTO&gt; query = session.createQuery(hql, StockReportDTO.class);
+//        return query.getResultList();
+//    }
+//}
+
+
+//    @Override
+//    public Optional&lt;StoreStock&gt; findByItemCodeAndBatchCode(Session session, String itemCode, String batchCode) {
+//        return session.createQuery(
+//                        &quot;FROM StoreStock WHERE itemCode = :itemCode AND batchCode = :batchCode AND isDeleted = false&quot;,
+//                        StoreStock.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .setParameter(&quot;batchCode&quot;, batchCode)
+//                .uniqueResultOptional();
+//    }
+//
+//    @Override
+//    public void save(Session session, StoreStock storeStock) {
+//        session.save(storeStock);
+//    }
+
+//    public List&lt;StoreStock&gt; findAvailableStockByItemCode(String itemCode) {
+//        return HibernateTransactionManager.execute(session -&gt; {
+//            String hql = &quot;FROM StoreStock s WHERE s.itemCode = :itemCode AND s.currentStock &gt; 0 AND s.isDeleted = false ORDER BY s.expiryDate ASC, s.purchaseDate ASC&quot;;
+//            Query&lt;StoreStock&gt; query = session.createQuery(hql, StoreStock.class);
+//            query.setParameter(&quot;itemCode&quot;, itemCode);
+//            return query.list();
+//        });
+//    }
+//
+//
+//    // work on this cause there is an interface below
+//    public void adjustStock(String itemCode, String batchCode, int adjustmentQuantity, StockAdjustmentStrategy strategy) {
+//        HibernateTransactionManager.execute(session -&gt; {
+//            String hql = &quot;FROM StoreStock s WHERE s.itemCode = :itemCode AND s.batchCode = :batchCode AND s.isDeleted = false&quot;;
+//            StoreStock stock = session.createQuery(hql, StoreStock.class)
+//                    .setParameter(&quot;itemCode&quot;, itemCode)
+//                    .setParameter(&quot;batchCode&quot;, batchCode)
+//                    .uniqueResult();
+//
+//            if (stock == null) {
+//                throw new IllegalArgumentException(&quot;Stock not found for itemCode: &quot; + itemCode + &quot;, batchCode: &quot; + batchCode);
+//            }
+//
+//            int updatedQuantity = strategy.adjust(stock.getCurrentStock(), adjustmentQuantity);
+//            if (updatedQuantity &lt; 0) {
+//                throw new IllegalStateException(&quot;Stock cannot go negative.&quot;);
+//            }
+//
+//            stock.setCurrentStock(updatedQuantity);
+//            stock.setUpdatedDateTime(LocalDateTime.now());
+//            session.update(stock);
+//            return null;
+//        });
+//    }
+
+//    public interface StockAdjustmentStrategy {
+//        int adjust(int currentStock, int adjustment);
+//    }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

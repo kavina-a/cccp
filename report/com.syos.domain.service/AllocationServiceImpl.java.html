@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllocationServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.service</a> &gt; <span class="el_source">AllocationServiceImpl.java</span></div><h1>AllocationServiceImpl.java</h1><pre class="source lang-java linenums">package com.syos.domain.service;
+
+import com.syos.application.dto.AllocatedRestockDTO;
+import com.syos.application.dto.request.AllocationRequest;
+import com.syos.data.dao.interfaces.ShelfDao;
+import com.syos.data.dao.interfaces.StoreDao;
+import com.syos.data.dao.interfaces.WebInventoryDao;
+import com.syos.domain.command.allocation.AllocateToShelfCommand;
+import com.syos.domain.command.allocation.AllocateToWebCommand;
+import com.syos.domain.service.interfaces.AllocationService;
+import com.syos.domain.strategy.stockselection.interfaces.StockSelectionStrategy;
+import com.syos.utils.SQLTransactionManager;
+
+import java.util.List;
+
+public class AllocationServiceImpl implements AllocationService {
+
+    private final StockSelectionStrategy strategy;
+    private final StoreDao storeDao;
+    private final ShelfDao shelfDao;
+    private final WebInventoryDao webInventoryDao;
+
+    public AllocationServiceImpl(StockSelectionStrategy strategy,
+                                 StoreDao storeDao,
+                                 ShelfDao shelfDao,
+<span class="fc" id="L26">                                 WebInventoryDao webInventoryDao) {</span>
+<span class="fc" id="L27">        this.strategy = strategy;</span>
+<span class="fc" id="L28">        this.storeDao = storeDao;</span>
+<span class="fc" id="L29">        this.shelfDao = shelfDao;</span>
+<span class="fc" id="L30">        this.webInventoryDao = webInventoryDao;</span>
+<span class="fc" id="L31">    }</span>
+
+
+    @Override
+    public List&lt;AllocatedRestockDTO&gt; allocateToWeb(AllocationRequest request) {
+<span class="fc" id="L36">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="fc" id="L37">            AllocateToWebCommand command = new AllocateToWebCommand(</span>
+                    request,
+                    strategy,
+                    storeDao,
+                    webInventoryDao
+            );
+<span class="fc" id="L43">            return command.execute(conn);</span>
+        });
+    }
+
+    @Override
+    public List&lt;AllocatedRestockDTO&gt; allocateToShelf(AllocationRequest request) {
+<span class="fc" id="L49">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="fc" id="L50">            AllocateToShelfCommand command = new AllocateToShelfCommand(</span>
+                    request,
+                    strategy,
+                    storeDao,
+                    shelfDao
+            );
+<span class="fc" id="L56">            return command.execute(conn);</span>
+        });
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

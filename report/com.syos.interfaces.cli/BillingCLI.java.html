@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BillingCLI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.interfaces.cli</a> &gt; <span class="el_source">BillingCLI.java</span></div><h1>BillingCLI.java</h1><pre class="source lang-java linenums">package com.syos.interfaces.cli;
+
+import com.syos.application.dto.BillReceiptDTO;
+import com.syos.application.dto.PaymentResultDTO;
+import com.syos.application.dto.request.BillItemRequest;
+import com.syos.application.dto.request.CreateBillRequest;
+import com.syos.domain.entity.Customer;
+import com.syos.domain.service.AuthenticationService;
+import com.syos.domain.strategy.payment.CashPaymentStrategy;
+import com.syos.domain.strategy.payment.intefaces.PaymentStrategy;
+import com.syos.interfaces.cli.utils.BillReceiptFormatter;
+import com.syos.interfaces.cli.utils.BillSerialFormatter;
+import com.syos.domain.entity.Bill;
+import com.syos.domain.entity.BillItem;
+import com.syos.domain.entity.TransactionType;
+import com.syos.domain.service.BillingService;
+import com.syos.domain.service.ProductService;
+import com.syos.interfaces.cli.utils.EntryMenuFormatter;
+import com.syos.utils.SessionManager;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+
+public class BillingCLI {
+    private final BillingService billingService;
+    private final ProductService ProductService;
+    private final AuthenticationService authenticationService;
+//    private final BillPresenter BillPresenter;
+
+    public BillingCLI(BillingService billingService, ProductService ProductService,
+<span class="nc" id="L36">                      AuthenticationService authenticationService) {</span>
+<span class="nc" id="L37">        this.billingService = billingService;</span>
+<span class="nc" id="L38">        this.ProductService = ProductService;</span>
+<span class="nc" id="L39">        this.authenticationService = authenticationService;</span>
+//        this.BillPresenter = BillPresenter;
+<span class="nc" id="L41">    }</span>
+
+    public void start() {
+<span class="nc" id="L44">        Scanner scanner = new Scanner(System.in);</span>
+
+        while (true) {
+<span class="nc" id="L47">            System.out.println(&quot;\n=== Billing System ===&quot;);</span>
+<span class="nc" id="L48">            System.out.println(&quot;1. Create Bill&quot;);</span>
+<span class="nc" id="L49">            System.out.println(&quot;2. View Bill (by ID)&quot;);</span>
+<span class="nc" id="L50">            System.out.println(&quot;3. Exit&quot;);</span>
+<span class="nc" id="L51">            System.out.print(&quot;Enter your choice: &quot;);</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (!scanner.hasNextInt()) {</span>
+<span class="nc" id="L54">                System.out.println(&quot;Invalid input. Please enter a number.&quot;);</span>
+<span class="nc" id="L55">                scanner.next();</span>
+<span class="nc" id="L56">                continue;</span>
+            }
+
+<span class="nc" id="L59">            int choice = scanner.nextInt();</span>
+<span class="nc" id="L60">            scanner.nextLine();</span>
+
+<span class="nc bnc" id="L62" title="All 4 branches missed.">            switch (choice) {</span>
+<span class="nc" id="L63">                case 1 -&gt; createBill(scanner);</span>
+<span class="nc" id="L64">                case 2 -&gt; viewBill(scanner);</span>
+                case 3 -&gt; {
+<span class="nc" id="L66">                    System.out.println(&quot;Exiting...&quot;);</span>
+<span class="nc" id="L67">                    return;</span>
+                }
+<span class="nc" id="L69">                default -&gt; System.out.println(&quot;Invalid choice. Try again.&quot;);</span>
+            }
+<span class="nc" id="L71">        }</span>
+    }
+
+    public void createBill(Scanner scanner) {
+        try {
+<span class="nc" id="L76">            System.out.println(&quot;======================================&quot;);</span>
+<span class="nc" id="L77">            System.out.println(&quot;      SYOS Point-of-Sale Terminal     &quot;);</span>
+<span class="nc" id="L78">            System.out.println(&quot;======================================&quot;);</span>
+
+<span class="nc" id="L80">            List&lt;BillItemRequest&gt; billItems = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L81">            BigDecimal totalBillAmount = BigDecimal.ZERO;</span>
+
+<span class="nc" id="L83">            Customer customer = null;</span>
+            while (true) {
+<span class="nc" id="L85">                System.out.print(&quot;Enter Customer ID (leave blank for WALK-IN): &quot;);</span>
+<span class="nc" id="L86">                String customerId = scanner.nextLine().trim();</span>
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (customerId.isEmpty()) {</span>
+<span class="nc" id="L89">                    break; // Proceed as WALK-IN</span>
+                }
+
+                try {
+<span class="nc" id="L93">                    customer = authenticationService.validateCustomerById(customerId)</span>
+<span class="nc" id="L94">                            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Customer not found.&quot;));</span>
+<span class="nc" id="L95">                    break; // Valid customer found</span>
+<span class="nc" id="L96">                } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L97">                    System.out.println(&quot;❌ &quot; + e.getMessage());</span>
+<span class="nc" id="L98">                } catch (RuntimeException e) {</span>
+<span class="nc" id="L99">                    System.out.println(&quot;❌ Internal error validating customer. Try again.&quot;);</span>
+<span class="nc" id="L100">                    System.err.println(&quot;[LOG] &quot; + e.getMessage());</span>
+<span class="nc" id="L101">                }</span>
+<span class="nc" id="L102">            }</span>
+
+
+            while (true) {
+<span class="nc" id="L106">                System.out.println(&quot;\n--- Add Item to Bill ---&quot;);</span>
+<span class="nc" id="L107">                System.out.print(&quot;Enter Product Code (or 'done' to finish): &quot;);</span>
+<span class="nc" id="L108">                String productCode = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (productCode.equalsIgnoreCase(&quot;done&quot;)) break;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                if (productCode.isEmpty()) {</span>
+<span class="nc" id="L111">                    System.out.println(&quot;Product code cannot be empty.&quot;);</span>
+<span class="nc" id="L112">                    continue;</span>
+                }
+
+<span class="nc" id="L115">                int quantity = 0;</span>
+                while (true) {
+<span class="nc" id="L117">                    System.out.print(&quot;Enter Quantity: &quot;);</span>
+<span class="nc" id="L118">                    String qtyInput = scanner.nextLine().trim();</span>
+                    try {
+<span class="nc" id="L120">                        quantity = Integer.parseInt(qtyInput);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                        if (quantity &lt;= 0) throw new NumberFormatException();</span>
+<span class="nc" id="L122">                        break;</span>
+<span class="nc" id="L123">                    } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L124">                        System.out.println(&quot;Invalid input. Please enter a positive integer quantity.&quot;);</span>
+                    }
+<span class="nc" id="L126">                }</span>
+
+<span class="nc" id="L128">                Integer discountID = null;</span>
+<span class="nc" id="L129">                System.out.print(&quot;Enter Discount ID (or leave blank): &quot;);</span>
+<span class="nc" id="L130">                String discountInput = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                if (!discountInput.isEmpty()) {</span>
+                    try {
+<span class="nc" id="L133">                        discountID = Integer.parseInt(discountInput);</span>
+<span class="nc" id="L134">                    } catch (NumberFormatException ignored) {</span>
+<span class="nc" id="L135">                        System.out.println(&quot;Invalid discount ID. Ignoring.&quot;);</span>
+<span class="nc" id="L136">                    }</span>
+                }
+
+<span class="nc" id="L139">                Double pricePerItem = ProductService.getProductPriceByCode(productCode);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                if (pricePerItem == null) {</span>
+<span class="nc" id="L141">                    System.out.println(&quot;Product not found. Please try again.&quot;);</span>
+<span class="nc" id="L142">                    continue;</span>
+                }
+
+<span class="nc" id="L145">                BillItemRequest billItem = new BillItemRequest(productCode, quantity, BigDecimal.valueOf(pricePerItem));</span>
+<span class="nc" id="L146">                billItems.add(billItem);</span>
+
+<span class="nc" id="L148">                BigDecimal itemTotal = BigDecimal.valueOf(pricePerItem).multiply(BigDecimal.valueOf(quantity));</span>
+<span class="nc" id="L149">                totalBillAmount = totalBillAmount.add(itemTotal);</span>
+
+//            totalBillAmount = totalBillAmount.add(pricePerItem.multiply(BigDecimal.valueOf(quantity))); //fix please
+
+<span class="nc" id="L153">                System.out.print(&quot;Add another item? (yes/no): &quot;);</span>
+<span class="nc" id="L154">                String another = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                if (another.equalsIgnoreCase(&quot;no&quot;)) break;</span>
+<span class="nc" id="L156">            }</span>
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (billItems.isEmpty()) {</span>
+<span class="nc" id="L159">                System.out.println(&quot;No items added. Bill canceled.&quot;);</span>
+<span class="nc" id="L160">                return;</span>
+            }
+
+//        BillPresenter.printBillSummary(billItems, totalBillAmount); // fix this lots of issues inside
+
+            BigDecimal cashTendered;
+            while (true) {
+<span class="nc" id="L167">                System.out.print(&quot;Enter Cash Tendered: &quot;);</span>
+<span class="nc" id="L168">                String cashInput = scanner.nextLine().trim();</span>
+                try {
+<span class="nc" id="L170">                    cashTendered = new BigDecimal(cashInput);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                    if (cashTendered.compareTo(totalBillAmount) &lt; 0) {</span>
+<span class="nc" id="L172">                        System.out.println(&quot;Insufficient amount. Please enter at least: &quot; + totalBillAmount);</span>
+<span class="nc" id="L173">                        continue;</span>
+                    }
+<span class="nc" id="L175">                    break;</span>
+<span class="nc" id="L176">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L177">                    System.out.println(&quot;Invalid amount. Please enter a valid number.&quot;);</span>
+                }
+<span class="nc" id="L179">            }</span>
+<span class="nc" id="L180">            BigDecimal change = cashTendered.subtract(totalBillAmount);</span>
+
+<span class="nc" id="L182">            PaymentStrategy paymentStrategy = new CashPaymentStrategy();</span>
+<span class="nc" id="L183">            PaymentResultDTO payment = paymentStrategy.processPayment(totalBillAmount, cashTendered);</span>
+
+//        CreateBillRequest billRequest = new CreateBillRequest(billItems, customer, cashTendered, TransactionType.OTC);
+<span class="nc" id="L186">            CreateBillRequest billRequest = new CreateBillRequest(billItems, customer, cashTendered, TransactionType.OTC, payment.getMethod());</span>
+<span class="nc" id="L187">            Bill bill = billingService.createBill(billRequest); // Should return the created Bill, with line items/prices</span>
+
+<span class="nc" id="L189">            System.out.println(&quot;\nBill created successfully!&quot;);</span>
+<span class="nc" id="L190">            System.out.println(&quot;Change to return: &quot; + change);</span>
+
+//        BillPresenter.printBillDetails(bill, change);
+
+<span class="nc" id="L194">            System.out.println(&quot;Press [Enter] to return to Main Menu...&quot;);</span>
+<span class="nc" id="L195">            scanner.nextLine();</span>
+
+<span class="nc" id="L197">        } catch (IllegalStateException e) {</span>
+<span class="nc" id="L198">            System.out.println(&quot;\n❌ &quot; + e.getMessage());</span>
+<span class="nc" id="L199">            EntryMenuFormatter.pauseForInput(scanner);</span>
+<span class="nc" id="L200">            return;</span>
+
+<span class="nc" id="L202">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L203">        System.out.println(&quot;\n❌ An unexpected error occurred. Please try again.&quot;);</span>
+<span class="nc" id="L204">        System.out.println(&quot;[LOG] Exception Type : &quot; + e.getClass().getName());</span>
+<span class="nc" id="L205">        System.out.println(&quot;[LOG] Message        : &quot; + e.getMessage());</span>
+<span class="nc" id="L206">        System.out.println(&quot;[LOG] Stack Trace    : &quot;);</span>
+<span class="nc" id="L207">        e.printStackTrace(System.out); // 🔍 Dumps the full error trace</span>
+<span class="nc" id="L208">        EntryMenuFormatter.pauseForInput(scanner);</span>
+<span class="nc" id="L209">    }</span>
+<span class="nc" id="L210">    }</span>
+
+    private void viewBill(Scanner scanner) {
+<span class="nc" id="L213">        System.out.print(&quot;Enter Bill Date (yyyy-MM-dd): &quot;);</span>
+<span class="nc" id="L214">        String dateInput = scanner.nextLine();</span>
+
+        LocalDate billDate;
+        try {
+<span class="nc" id="L218">            billDate = LocalDate.parse(dateInput);</span>
+<span class="nc" id="L219">        } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L220">            System.out.println(&quot;Invalid date format. Please use yyyy-MM-dd.&quot;);</span>
+<span class="nc" id="L221">            return;</span>
+<span class="nc" id="L222">        }</span>
+
+<span class="nc" id="L224">        System.out.print(&quot;Enter Bill Serial Number: &quot;);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        while (!scanner.hasNextInt()) {</span>
+<span class="nc" id="L226">            System.out.println(&quot;Invalid input. Please enter a numeric Bill Serial Number.&quot;);</span>
+<span class="nc" id="L227">            scanner.next();</span>
+        }
+<span class="nc" id="L229">        int serialNo = scanner.nextInt();</span>
+<span class="nc" id="L230">        scanner.nextLine();</span>
+
+
+<span class="nc" id="L233">        List&lt;BillReceiptDTO&gt; receipt = billingService.findBillReceipt(billDate, serialNo);</span>
+
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        if (receipt.isEmpty()) {</span>
+<span class="nc" id="L236">            System.out.println(&quot;No bill found for date &quot; + billDate + &quot; with serial number &quot; + serialNo);</span>
+<span class="nc" id="L237">            return;</span>
+        }
+
+<span class="nc" id="L240">        BillReceiptFormatter.printBillDetails(receipt);</span>
+<span class="nc" id="L241">    }</span>
+}
+
+
+//    private void viewBill(Scanner scanner) {
+//        System.out.print(&quot;Enter Bill Date (yyyy-MM-dd): &quot;);
+//        String dateInput = scanner.nextLine();
+//
+//        LocalDate billDate;
+//        try {
+//            billDate = LocalDate.parse(dateInput);
+//        } catch (DateTimeParseException e) {
+//            System.out.println(&quot;Invalid date format. Please use yyyy-MM-dd.&quot;);
+//            return;
+//        }
+//
+//        System.out.print(&quot;Enter Bill Serial Number: &quot;);
+//        while (!scanner.hasNextInt()) {
+//            System.out.println(&quot;Invalid input. Please enter a numeric Bill Serial Number.&quot;);
+//            scanner.next();
+//        }
+//        int serialNo = scanner.nextInt();
+//        scanner.nextLine();
+//
+//        Optional&lt;Bill&gt; billOpt = billingService.findBill(billDate, serialNo);
+//        if (billOpt.isEmpty()) {
+//            System.out.println(&quot;No bill found for date &quot; + billDate + &quot; with serial number &quot; + serialNo);
+//            return;
+//        }
+//
+//        BillReceiptFormatter.printBillDetails(billOpt.get());
+//    }
+
+//    private void printBillDetails(Bill bill) {
+//        System.out.println(&quot;\n=== 🧾 Bill Summary ===&quot;);
+//        System.out.printf(&quot;📄 Formatted Serial : %s%n&quot;, BillSerialFormatter.format(bill.getSerialNumber(), bill.getBillDate()));
+//        System.out.printf(&quot;🆔 Bill ID          : %d%n&quot;, bill.getId());
+//        System.out.printf(&quot;📅 Bill Date        : %s%n&quot;, bill.getBillDate());
+//        System.out.printf(&quot;💰 Total Amount     : LKR %.2f%n&quot;, bill.getTotalAmount());
+//        System.out.printf(&quot;💵 Cash Tendered    : LKR %.2f%n&quot;, bill.getCashTendered());
+//        System.out.printf(&quot;🔁 Change           : LKR %.2f%n&quot;, bill.getChangeAmount());
+//
+//        System.out.println(&quot;\n=== 📦 Bill Items ===&quot;);
+//
+//        List&lt;BillItem&gt; items = bill.getItems();
+//        if (items == null || items.isEmpty()) {
+//            System.out.println(&quot;No items found for this bill.&quot;);
+//            return;
+//        }
+//
+//        System.out.printf(&quot;%-15s %-30s %8s %10s %12s%n&quot;, &quot;Product Code&quot;, &quot;Product Name&quot;, &quot;Qty&quot;, &quot;Unit Price&quot;, &quot;Total&quot;);
+//        System.out.println(&quot;---------------------------------------------------------------------------&quot;);
+//
+//        for (BillItem item : items) {
+//            String code = item.getProduct().getItemCode();
+//            String name = item.getProduct().getItemName();
+//            int qty = item.getQuantity();
+//            BigDecimal price = item.getPrice();
+//            BigDecimal total = price.multiply(BigDecimal.valueOf(qty));
+//
+//            System.out.printf(&quot;%-15s %-30s %8d %10.2f %12.2f%n&quot;, code, name, qty, price, total);
+//        }
+//    }
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

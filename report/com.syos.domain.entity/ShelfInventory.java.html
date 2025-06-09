@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShelfInventory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.entity</a> &gt; <span class="el_source">ShelfInventory.java</span></div><h1>ShelfInventory.java</h1><pre class="source lang-java linenums">package com.syos.domain.entity;
+
+import java.time.LocalDateTime;
+
+<span class="fc" id="L5">public class ShelfInventory {</span>
+
+    private Long id;
+    private String itemCode;
+    private String batchCode;
+    private String shelfId;
+    private int quantityTransferred;
+    private int quantityRemaining;
+    private LocalDateTime movedDate;
+    private String updatedBy;
+<span class="fc" id="L15">    private StockStatus status = StockStatus.ACTIVE;</span>
+
+    public Long getId() {
+<span class="nc" id="L18">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L22">        this.id = id;</span>
+<span class="nc" id="L23">    }</span>
+
+    public String getItemCode() {
+<span class="nc" id="L26">        return itemCode;</span>
+    }
+
+    public void setItemCode(String itemCode) {
+<span class="fc" id="L30">        this.itemCode = itemCode;</span>
+<span class="fc" id="L31">    }</span>
+
+    public String getBatchCode() {
+<span class="nc" id="L34">        return batchCode;</span>
+    }
+
+    public void setBatchCode(String batchCode) {
+<span class="fc" id="L38">        this.batchCode = batchCode;</span>
+<span class="fc" id="L39">    }</span>
+
+    public String getShelfId() {
+<span class="nc" id="L42">        return shelfId;</span>
+    }
+
+    public void setShelfId(String shelfId) {
+<span class="nc" id="L46">        this.shelfId = shelfId;</span>
+<span class="nc" id="L47">    }</span>
+
+    public int getQuantityTransferred() {
+<span class="nc" id="L50">        return quantityTransferred;</span>
+    }
+
+    public void setQuantityTransferred(int quantityTransferred) {
+<span class="nc" id="L54">        this.quantityTransferred = quantityTransferred;</span>
+<span class="nc" id="L55">    }</span>
+
+    public int getQuantityRemaining() {
+<span class="fc" id="L58">        return quantityRemaining;</span>
+    }
+
+    public void setQuantityRemaining(int quantityRemaining) {
+<span class="fc" id="L62">        this.quantityRemaining = quantityRemaining;</span>
+<span class="fc" id="L63">    }</span>
+
+    public LocalDateTime getMovedDate() {
+<span class="nc" id="L66">        return movedDate;</span>
+    }
+
+    public void setMovedDate(LocalDateTime movedDate) {
+<span class="nc" id="L70">        this.movedDate = movedDate;</span>
+<span class="nc" id="L71">    }</span>
+
+    public String getUpdatedBy() {
+<span class="nc" id="L74">        return updatedBy;</span>
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+<span class="nc" id="L78">        this.updatedBy = updatedBy;</span>
+<span class="nc" id="L79">    }</span>
+
+    public StockStatus getStatus() {
+<span class="nc" id="L82">        return status;</span>
+    }
+
+    public void setStatus(StockStatus status) {
+<span class="fc" id="L86">        this.status = status;</span>
+<span class="fc" id="L87">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

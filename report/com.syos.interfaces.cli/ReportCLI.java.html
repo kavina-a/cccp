@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportCLI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.interfaces.cli</a> &gt; <span class="el_source">ReportCLI.java</span></div><h1>ReportCLI.java</h1><pre class="source lang-java linenums">package com.syos.interfaces.cli;
+
+import com.syos.application.reports.service.ReportGenerationService;
+import com.syos.domain.entity.ReportType;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Scanner;
+
+public class ReportCLI {
+
+    private final ReportGenerationService reportService;
+
+<span class="nc" id="L14">    public ReportCLI(ReportGenerationService reportService) {</span>
+<span class="nc" id="L15">        this.reportService = reportService;</span>
+<span class="nc" id="L16">    }</span>
+
+    public void start() throws SQLException {
+<span class="nc" id="L19">        Scanner scanner = new Scanner(System.in);</span>
+        while (true) {
+<span class="nc" id="L21">            System.out.println(&quot;\n===== REPORT MENU =====&quot;);</span>
+<span class="nc" id="L22">            System.out.println(&quot;1. Total Sales Report&quot;);</span>
+<span class="nc" id="L23">            System.out.println(&quot;2. Reshelving Report&quot;);</span>
+<span class="nc" id="L24">            System.out.println(&quot;3. Reorder Level Report&quot;);</span>
+<span class="nc" id="L25">            System.out.println(&quot;4. Stock Report&quot;);</span>
+<span class="nc" id="L26">            System.out.println(&quot;5. Bill Report&quot;);</span>
+<span class="nc" id="L27">            System.out.println(&quot;6. Exit&quot;);</span>
+<span class="nc" id="L28">            System.out.print(&quot;Select an option: &quot;);</span>
+
+            int choice;
+            try {
+<span class="nc" id="L32">                choice = Integer.parseInt(scanner.nextLine());</span>
+<span class="nc" id="L33">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L34">                System.out.println(&quot;Invalid input. Please enter a number.&quot;);</span>
+<span class="nc" id="L35">                continue;</span>
+<span class="nc" id="L36">            }</span>
+
+<span class="nc bnc" id="L38" title="All 7 branches missed.">            switch (choice) {</span>
+<span class="nc" id="L39">                case 1 -&gt; runTotalSalesReport(scanner);         // a. Total sales</span>
+<span class="nc" id="L40">                case 2 -&gt; reportService.generateReshelfReport(); // b. Reshelving</span>
+<span class="nc" id="L41">                case 3 -&gt; reportService.generateRestockReport(); // c. Reorder level (Restock)</span>
+<span class="nc" id="L42">                case 4 -&gt; reportService.generateStockReport();   // d. Stock Report</span>
+<span class="nc" id="L43">                case 5 -&gt; runBillReport(scanner);                // e. Bill Report</span>
+                case 6 -&gt; {
+<span class="nc" id="L45">                    System.out.println(&quot;Exiting report menu.&quot;);</span>
+<span class="nc" id="L46">                    return;</span>
+                }
+<span class="nc" id="L48">                default -&gt; System.out.println(&quot;Invalid option. Try again.&quot;);</span>
+            }
+<span class="nc" id="L50">        }</span>
+    }
+
+    private void runTotalSalesReport(Scanner scanner) throws SQLException {
+<span class="nc" id="L54">        System.out.print(&quot;Enter date (YYYY-MM-DD): &quot;);</span>
+<span class="nc" id="L55">        LocalDate date = LocalDate.parse(scanner.nextLine());</span>
+
+<span class="nc" id="L57">        ReportType type = selectTransactionType(scanner);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (type != null) {</span>
+<span class="nc" id="L59">            reportService.generateTotalSaleReport(date, type);</span>
+        }
+<span class="nc" id="L61">    }</span>
+
+    private void runBillReport(Scanner scanner) throws SQLException {
+<span class="nc" id="L64">        ReportType type = selectTransactionType(scanner);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (type != null) {</span>
+<span class="nc" id="L66">            reportService.generateBillReport(type);</span>
+        }
+<span class="nc" id="L68">    }</span>
+
+    private ReportType selectTransactionType(Scanner scanner) {
+<span class="nc" id="L71">        System.out.println(&quot;Select transaction type:&quot;);</span>
+<span class="nc" id="L72">        System.out.println(&quot;1. OTC&quot;);</span>
+<span class="nc" id="L73">        System.out.println(&quot;2. WEB&quot;);</span>
+<span class="nc" id="L74">        System.out.println(&quot;3. Combined&quot;);</span>
+<span class="nc" id="L75">        System.out.print(&quot;Your choice: &quot;);</span>
+
+<span class="nc" id="L77">        int typeChoice = Integer.parseInt(scanner.nextLine());</span>
+<span class="nc bnc" id="L78" title="All 4 branches missed.">        return switch (typeChoice) {</span>
+<span class="nc" id="L79">            case 1 -&gt; ReportType.OTC;</span>
+<span class="nc" id="L80">            case 2 -&gt; ReportType.WEB;</span>
+<span class="nc" id="L81">            case 3 -&gt; ReportType.COMBINED;</span>
+            default -&gt; {
+<span class="nc" id="L83">                System.out.println(&quot;Invalid transaction type.&quot;);</span>
+<span class="nc" id="L84">                yield null;</span>
+            }
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

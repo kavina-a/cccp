@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObserverTestRun.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS</a> &gt; <a href="index.source.html" class="el_package">com.syos.utils</a> &gt; <span class="el_source">ObserverTestRun.java</span></div><h1>ObserverTestRun.java</h1><pre class="source lang-java linenums">package com.syos.utils;
+
+import com.syos.data.dao.ProductDaoImpl;
+import com.syos.data.dao.ShelfDaoImpl;
+import com.syos.domain.notifications.ConsoleNotifier;
+import com.syos.domain.notifications.StockEventPublisher;
+import com.syos.domain.service.ShelfService;
+import com.syos.domain.notifications.StockObserver;
+import com.syos.utils.SQLTransactionManager;
+
+import java.sql.Connection;
+
+<span class="nc" id="L13">public class ObserverTestRun {</span>
+
+    public static void main(String[] args) {
+        try {
+            // Initialize DAOs (replace with your actual instances)
+<span class="nc" id="L18">            ShelfDaoImpl shelfDao = new ShelfDaoImpl();</span>
+<span class="nc" id="L19">            ProductDaoImpl productDao = new ProductDaoImpl();</span>
+
+            // Create the event publisher
+<span class="nc" id="L22">            StockEventPublisher publisher = new StockEventPublisher();</span>
+
+            // Register a console-based observer
+<span class="nc" id="L25">            StockObserver observer = new ConsoleNotifier();</span>
+<span class="nc" id="L26">            publisher.registerObserver(observer);</span>
+
+            // Inject publisher into the service
+<span class="nc" id="L29">            ShelfService shelfService = new ShelfService(shelfDao, null, publisher); // null if storeDao not needed for this test</span>
+
+            // Run the test logic
+<span class="nc" id="L32">            SQLTransactionManager.execute((Connection conn) -&gt; {</span>
+                // Replace with an item code that you know is low on stock in DB
+<span class="nc" id="L34">                String testItemCode = &quot;COCA-KOLA-1L&quot;;</span>
+<span class="nc" id="L35">                System.out.println(&quot;[TEST] Evaluating low stock for &quot; + testItemCode);</span>
+<span class="nc" id="L36">                shelfService.evaluateLowStock(conn, testItemCode);</span>
+<span class="nc" id="L37">                return null;</span>
+            });
+
+<span class="nc" id="L40">        } catch (Exception e) {</span>
+<span class="nc" id="L41">            e.printStackTrace();</span>
+<span class="nc" id="L42">        }</span>
+<span class="nc" id="L43">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

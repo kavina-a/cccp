@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReshelfReport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.reports.reshelf</a> &gt; <span class="el_source">ReshelfReport.java</span></div><h1>ReshelfReport.java</h1><pre class="source lang-java linenums">package com.syos.application.reports.reshelf;
+
+import com.syos.application.reports.data.ReshelfReportDTO;
+import com.syos.application.reports.reshelf.fetch.ReshelfFetchStrategy;
+import com.syos.application.reports.template.ReportTemplate;
+
+import java.sql.SQLException;
+import java.util.List;
+
+public class ReshelfReport extends ReportTemplate&lt;ReshelfReportDTO&gt; {
+
+    private final ReshelfFetchStrategy fetchStrategy;
+
+<span class="fc" id="L14">    private int totalCurrent = 0;</span>
+<span class="fc" id="L15">    private int totalSold = 0;</span>
+<span class="fc" id="L16">    private int totalExpired = 0;</span>
+<span class="fc" id="L17">    private int totalToReshelf = 0;</span>
+
+<span class="fc" id="L19">    public ReshelfReport(ReshelfFetchStrategy fetchStrategy) {</span>
+<span class="fc" id="L20">        this.fetchStrategy = fetchStrategy;</span>
+<span class="fc" id="L21">    }</span>
+
+    @Override
+    protected List&lt;ReshelfReportDTO&gt; fetchData() throws SQLException {
+<span class="fc" id="L25">        return fetchStrategy.fetch();</span>
+    }
+
+    @Override
+    protected void aggregate(List&lt;ReshelfReportDTO&gt; data) {
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        for (ReshelfReportDTO dto : data) {</span>
+<span class="nc" id="L31">            totalCurrent += dto.getCurrentQuantity();</span>
+<span class="nc" id="L32">            totalSold += dto.getSoldQuantity();</span>
+<span class="nc" id="L33">            totalExpired += dto.getExpiredQuantity();</span>
+<span class="nc" id="L34">            totalToReshelf += dto.getToReshelfQuantity();</span>
+<span class="nc" id="L35">        }</span>
+<span class="fc" id="L36">    }</span>
+
+    @Override
+    protected void present(List&lt;ReshelfReportDTO&gt; data) {
+<span class="fc" id="L40">        System.out.println(&quot;=== 📦 SHELF RESHELVING REPORT ===&quot;);</span>
+<span class="fc" id="L41">        System.out.printf(&quot;%-10s | %-20s | %-10s | %-10s | %-10s | %-10s | %-10s | %-10s\n&quot;,</span>
+                &quot;ItemCode&quot;, &quot;ItemName&quot;, &quot;ShelfCap&quot;, &quot;Current&quot;, &quot;Sold&quot;, &quot;Expired&quot;, &quot;ToFill&quot;, &quot;LastMoved&quot;);
+
+<span class="fc" id="L44">        System.out.println(&quot;---------------------------------------------------------------------------------------------&quot;);</span>
+
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        for (ReshelfReportDTO dto : data) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            String expiredMarker = dto.getExpiredQuantity() &gt; 0 ? &quot; ⚠️&quot; : &quot;&quot;;</span>
+<span class="nc" id="L48">            System.out.printf(&quot;%-10s | %-20s | %-10d | %-10d | %-10d | %-10d | %-10d | %-10s%s\n&quot;,</span>
+<span class="nc" id="L49">                    dto.getItemCode(),</span>
+<span class="nc" id="L50">                    dto.getItemName(),</span>
+<span class="nc" id="L51">                    dto.getShelfCapacity(),</span>
+<span class="nc" id="L52">                    dto.getCurrentQuantity(),</span>
+<span class="nc" id="L53">                    dto.getSoldQuantity(),</span>
+<span class="nc" id="L54">                    dto.getExpiredQuantity(),</span>
+<span class="nc" id="L55">                    dto.getToReshelfQuantity(),</span>
+<span class="nc" id="L56">                    dto.getLastMovedDate(),</span>
+                    expiredMarker
+            );
+<span class="nc" id="L59">        }</span>
+
+<span class="fc" id="L61">        System.out.println(&quot;---------------------------------------------------------------------------------------------&quot;);</span>
+<span class="fc" id="L62">        System.out.printf(&quot;TOTAL → Current: %d | Sold: %d | Expired: %d | To Reshelf: %d\n&quot;,</span>
+<span class="fc" id="L63">                totalCurrent, totalSold, totalExpired, totalToReshelf);</span>
+<span class="fc" id="L64">        System.out.println(&quot;Note: ⚠️ indicates items with expired stock.\n&quot;);</span>
+<span class="fc" id="L65">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

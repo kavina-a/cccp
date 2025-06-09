@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BillItemService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.service</a> &gt; <span class="el_source">BillItemService.java</span></div><h1>BillItemService.java</h1><pre class="source lang-java linenums">package com.syos.domain.service;
+
+import com.syos.application.dto.request.BillItemRequest;
+import com.syos.data.dao.ProductDaoImpl;
+import com.syos.data.dao.interfaces.ProductDao;
+import com.syos.domain.entity.BillItem;
+import com.syos.domain.entity.Product;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class BillItemService {
+
+    private final ProductDao productDao;
+
+<span class="nc" id="L19">    public BillItemService(ProductDao productDao) {</span>
+<span class="nc" id="L20">        this.productDao = productDao;</span>
+<span class="nc" id="L21">    }</span>
+
+    public List&lt;BillItem&gt; createBillItems(Connection conn, List&lt;BillItemRequest&gt; requests) {
+<span class="nc" id="L24">        List&lt;BillItem&gt; billItems = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        for (BillItemRequest req : requests) {</span>
+            try {
+<span class="nc" id="L28">                Optional&lt;Product&gt; productOpt = productDao.findByItemCode(conn, req.getProductCode());</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                if (productOpt.isEmpty()) {</span>
+<span class="nc" id="L30">                    throw new IllegalArgumentException(&quot;Invalid product code: &quot; + req.getProductCode());</span>
+                }
+
+<span class="nc" id="L33">                Product product = productOpt.get();</span>
+
+<span class="nc" id="L35">                BillItem item = new BillItem();</span>
+<span class="nc" id="L36">                item.setProduct(product);</span>
+<span class="nc" id="L37">                item.setQuantity(req.getQuantity());</span>
+<span class="nc" id="L38">                item.setPrice(req.getPricePerItem());</span>
+
+<span class="nc" id="L40">                billItems.add(item);</span>
+<span class="nc" id="L41">            } catch (SQLException e) {</span>
+<span class="nc" id="L42">                throw new RuntimeException(&quot;Failed to fetch product for code: &quot; + req.getProductCode(), e);</span>
+<span class="nc" id="L43">            }</span>
+<span class="nc" id="L44">        }</span>
+
+<span class="nc" id="L46">        return billItems;</span>
+    }
+
+//    public List&lt;BillItem&gt; createBillItems(Connection conn, List&lt;BillItemRequest&gt; requests) throws SQLException {
+//        List&lt;BillItem&gt; billItems = new ArrayList&lt;&gt;();
+//
+//        for (BillItemRequest req : requests) {
+//            Optional&lt;Product&gt; productOpt = productDao.findByItemCode(conn, req.getProductCode());
+//            if (productOpt.isEmpty()) {
+//                throw new IllegalArgumentException(&quot;Invalid product code: &quot; + req.getProductCode());
+//            }
+//
+//            Product product = productOpt.get();
+//
+//            BillItem item = new BillItem();
+//            item.setProduct(product);
+//            item.setQuantity(req.getQuantity());
+//            item.setPrice(req.getPricePerItem());
+//
+//            billItems.add(item);
+//        }
+//        return billItems;
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

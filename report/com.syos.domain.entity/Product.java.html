@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Product.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.entity</a> &gt; <span class="el_source">Product.java</span></div><h1>Product.java</h1><pre class="source lang-java linenums">//package com.syos.domain.entity;
+//
+//import jakarta.persistence.*;
+//import java.time.LocalDateTime;
+//
+//@Entity
+//@Table(name = &quot;tblProduct&quot;)
+//public class Product {
+//
+//    @Id
+//    @Column(name = &quot;ItemCode&quot;) // Format: BEV-TRO-1L-0012
+//    private String itemCode;
+//
+//    @Column(name = &quot;ItemName&quot;, nullable = false)
+//    private String itemName;
+//
+//    @Column(name = &quot;Price&quot;, nullable = false)
+//    private double price;
+//
+//    @Column(name = &quot;IsActive&quot;, nullable = false)
+//    private boolean isActive = true;
+//
+//    @Column(name = &quot;IsDeleted&quot;, nullable = false)
+//    private boolean isDeleted = false;
+//
+//    @Column(name = &quot;UpdatedDateTime&quot;)
+//    private LocalDateTime updatedDateTime;
+//
+//    @Column(name = &quot;UpdatedBy&quot;)
+//    private int updatedBy;
+//
+//    @Column(name = &quot;Status&quot;, nullable = false)
+//    private ProductStatus status = ProductStatus.ACTIVE;
+//
+//    public Product() {
+//    }
+//
+//    // === Getters and Setters ===
+//
+//    public String getItemCode() {
+//        return itemCode;
+//    }
+//
+//    public void setItemCode(String itemCode) {
+//        this.itemCode = itemCode;
+//    }
+//
+//    public String getItemName() {
+//        return itemName;
+//    }
+//
+//    public void setItemName(String itemName) {
+//        this.itemName = itemName;
+//    }
+//
+//    public double getPrice() {
+//        return price;
+//    }
+//
+//    public void setPrice(double price) {
+//        this.price = price;
+//    }
+//
+//    public boolean isActive() {
+//        return isActive;
+//    }
+//
+//    public void setActive(boolean active) {
+//        isActive = active;
+//    }
+//
+//    public boolean isDeleted() {
+//        return isDeleted;
+//    }
+//
+//    public void setDeleted(boolean deleted) {
+//        isDeleted = deleted;
+//    }
+//
+//    public LocalDateTime getUpdatedDateTime() {
+//        return updatedDateTime;
+//    }
+//
+//    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
+//        this.updatedDateTime = updatedDateTime;
+//    }
+//
+//    public int getUpdatedBy() {
+//        return updatedBy;
+//    }
+//
+//    public void setUpdatedBy(int updatedBy) {
+//        this.updatedBy = updatedBy;
+//    }
+//}
+
+package com.syos.domain.entity;
+
+import java.time.LocalDateTime;
+
+public class Product {
+
+    private String itemCode; // Format: BEV-TRO-1L-0012
+    private String itemName;
+    private double price;
+    private LocalDateTime updatedDateTime;
+    private String updatedBy;
+    private ProductStatus status;
+    private Integer reorderLevel; // Nullable, used for stock management
+
+<span class="fc" id="L111">    public Product() {</span>
+<span class="fc" id="L112">    }</span>
+
+    public String getItemCode() {
+<span class="fc" id="L115">        return itemCode;</span>
+    }
+
+    public void setItemCode(String itemCode) {
+<span class="fc" id="L119">        this.itemCode = itemCode;</span>
+<span class="fc" id="L120">    }</span>
+
+    public String getItemName() {
+<span class="fc" id="L123">        return itemName;</span>
+    }
+
+    public void setItemName(String itemName) {
+<span class="fc" id="L127">        this.itemName = itemName;</span>
+<span class="fc" id="L128">    }</span>
+
+    public double getPrice() {
+<span class="fc" id="L131">        return price;</span>
+    }
+
+    public void setPrice(double price) {
+<span class="fc" id="L135">        this.price = price;</span>
+<span class="fc" id="L136">    }</span>
+
+    public LocalDateTime getUpdatedDateTime() {
+<span class="nc" id="L139">        return updatedDateTime;</span>
+    }
+
+    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
+<span class="fc" id="L143">        this.updatedDateTime = updatedDateTime;</span>
+<span class="fc" id="L144">    }</span>
+
+    public String getUpdatedBy() {
+<span class="nc" id="L147">        return updatedBy;</span>
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+<span class="fc" id="L151">        this.updatedBy = updatedBy;</span>
+<span class="fc" id="L152">    }</span>
+
+    public ProductStatus getStatus() {
+<span class="nc" id="L155">        return status;</span>
+    }
+
+    public void setStatus(ProductStatus status) {
+<span class="nc" id="L159">        this.status = status;</span>
+<span class="nc" id="L160">    }</span>
+
+    public Integer getReorderLevel() {
+<span class="nc" id="L163">        return reorderLevel;</span>
+    }
+
+    public void setReorderLevel(Integer reorderLevel) {
+<span class="fc" id="L167">        this.reorderLevel = reorderLevel;</span>
+<span class="fc" id="L168">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

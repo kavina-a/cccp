@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StoreStockBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.dto.builder</a> &gt; <span class="el_source">StoreStockBuilder.java</span></div><h1>StoreStockBuilder.java</h1><pre class="source lang-java linenums">package com.syos.application.dto.builder;
+
+import com.syos.domain.entity.StoreStock;
+
+import java.time.LocalDateTime;
+
+<span class="nc" id="L7">public class StoreStockBuilder {</span>
+
+    private String itemCode;
+    private String batchCode;
+    private int initialStock;
+    private int currentStock;
+    private LocalDateTime expiryDate;
+    private String updatedBy;
+    private LocalDateTime updatedDateTime;
+    private LocalDateTime receivedDate;
+
+    public StoreStockBuilder withItemCode(String itemCode) {
+<span class="nc" id="L19">        this.itemCode = itemCode;</span>
+<span class="nc" id="L20">        return this;</span>
+    }
+
+    public StoreStockBuilder withBatchCode(String batchCode) {
+<span class="nc" id="L24">        this.batchCode = batchCode;</span>
+<span class="nc" id="L25">        return this;</span>
+    }
+
+    public StoreStockBuilder withInitialStock(int initialStock) {
+<span class="nc" id="L29">        this.initialStock = initialStock;</span>
+<span class="nc" id="L30">        return this;</span>
+    }
+
+    public StoreStockBuilder withCurrentStock(int currentStock) {
+<span class="nc" id="L34">        this.currentStock = currentStock;</span>
+<span class="nc" id="L35">        return this;</span>
+    }
+
+    public StoreStockBuilder withExpiryDate(LocalDateTime expiryDate) {
+<span class="nc" id="L39">        this.expiryDate = expiryDate;</span>
+<span class="nc" id="L40">        return this;</span>
+    }
+
+    public StoreStockBuilder withReceivedDate(LocalDateTime receivedDate) {
+<span class="nc" id="L44">        this.receivedDate = receivedDate;</span>
+<span class="nc" id="L45">        return this;</span>
+    }
+
+    public StoreStockBuilder withUpdatedBy(String updatedBy) {
+<span class="nc" id="L49">        this.updatedBy = updatedBy;</span>
+<span class="nc" id="L50">        return this;</span>
+    }
+
+    public StoreStockBuilder withUpdatedDateTime(LocalDateTime updatedDateTime) {
+<span class="nc" id="L54">        this.updatedDateTime = updatedDateTime;</span>
+<span class="nc" id="L55">        return this;</span>
+    }
+
+    public StoreStock build() {
+<span class="nc" id="L59">        StoreStock stock = new StoreStock();</span>
+<span class="nc" id="L60">        stock.setItemCode(itemCode);</span>
+<span class="nc" id="L61">        stock.setBatchCode(batchCode);</span>
+<span class="nc" id="L62">        stock.setInitialStock(initialStock);</span>
+<span class="nc" id="L63">        stock.setCurrentStock(currentStock);</span>
+<span class="nc" id="L64">        stock.setExpiryDate(expiryDate);</span>
+<span class="nc" id="L65">        stock.setReceivedDate(receivedDate);</span>
+<span class="nc" id="L66">        stock.setUpdatedBy(updatedBy);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        stock.setUpdatedDateTime(updatedDateTime != null ? updatedDateTime : LocalDateTime.now());</span>
+<span class="nc" id="L68">        return stock;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

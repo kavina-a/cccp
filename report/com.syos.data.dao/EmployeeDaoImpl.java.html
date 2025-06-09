@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">EmployeeDaoImpl.java</span></div><h1>EmployeeDaoImpl.java</h1><pre class="source lang-java linenums">package com.syos.data.dao;
+
+import com.syos.data.dao.interfaces.EmployeeDao;
+import com.syos.domain.entity.Employee;
+import com.syos.domain.entity.EmployeeRole;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
+
+<span class="nc" id="L13">public class EmployeeDaoImpl implements EmployeeDao {</span>
+
+
+    @Override
+    public Optional&lt;Employee&gt; findByUsername(Connection conn, String username) {
+<span class="nc" id="L18">        String sql = &quot;SELECT * FROM Employee WHERE Username = ?&quot;;</span>
+<span class="nc" id="L19">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L20">            stmt.setString(1, username);</span>
+<span class="nc" id="L21">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">                return rs.next() ? Optional.of(mapResultSetToEntity(rs)) : Optional.empty();</span>
+            }
+<span class="nc" id="L24">        } catch (SQLException e) {</span>
+<span class="nc" id="L25">            throw new RuntimeException(&quot;Failed to fetch employee by username: &quot; + username, e);</span>
+        }
+    }
+
+    @Override
+    public void save(Connection conn, Employee employee) {
+<span class="nc" id="L31">        String sql = &quot;INSERT INTO Employee (EmployeeID, Email, Username, Password, Role, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="nc" id="L32">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L33">            stmt.setString(1, employee.getEmployeeID());</span>
+<span class="nc" id="L34">            stmt.setString(2, employee.getEmail());</span>
+<span class="nc" id="L35">            stmt.setString(3, employee.getUsername());</span>
+<span class="nc" id="L36">            stmt.setString(4, employee.getPassword());</span>
+<span class="nc" id="L37">            stmt.setString(5, employee.getRole().toString());</span>
+<span class="nc" id="L38">            stmt.setString(6, employee.getStatus());</span>
+<span class="nc" id="L39">            stmt.setTimestamp(7, new java.sql.Timestamp(employee.getCreatedAt().getTime()));</span>
+<span class="nc" id="L40">            stmt.executeUpdate();</span>
+<span class="nc" id="L41">        } catch (SQLException e) {</span>
+<span class="nc" id="L42">            throw new RuntimeException(&quot;Failed to save employee: &quot; + employee.getUsername(), e);</span>
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">    }</span>
+
+
+//    @Override
+//    public Optional&lt;Employee&gt; findByUsername(Connection conn, String username) throws SQLException {
+//        String sql = &quot;SELECT * FROM Employee WHERE Username = ?&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, username);
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                return rs.next() ? Optional.of(mapResultSetToEntity(rs)) : Optional.empty();
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void save(Connection conn, Employee employee) throws SQLException {
+//        String sql = &quot;INSERT INTO Employee (EmployeeID, Email, Username, Password, Role, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, employee.getEmployeeID());
+//            stmt.setString(2, employee.getEmail());
+//            stmt.setString(3, employee.getUsername());
+//            stmt.setString(4, employee.getPassword());
+//            stmt.setString(5, employee.getRole().toString());
+//            stmt.setString(6, employee.getStatus());
+//            stmt.setTimestamp(7, new java.sql.Timestamp(employee.getCreatedAt().getTime()));
+//            stmt.executeUpdate();
+//        }
+//    }
+
+    private Employee mapResultSetToEntity(ResultSet rs) throws SQLException {
+<span class="nc" id="L74">        Employee e = new Employee();</span>
+<span class="nc" id="L75">        e.setEmployeeID(rs.getString(&quot;EmployeeID&quot;));</span>
+<span class="nc" id="L76">        e.setEmail(rs.getString(&quot;Email&quot;));</span>
+<span class="nc" id="L77">        e.setUsername(rs.getString(&quot;Username&quot;));</span>
+<span class="nc" id="L78">        e.setPassword(rs.getString(&quot;Password&quot;));</span>
+<span class="nc" id="L79">        e.setRole(EmployeeRole.valueOf(rs.getString(&quot;Role&quot;)));</span>
+<span class="nc" id="L80">        e.setStatus(rs.getString(&quot;Status&quot;));</span>
+<span class="nc" id="L81">        e.setCreatedAt(rs.getTimestamp(&quot;CreatedAt&quot;));</span>
+<span class="nc" id="L82">        return e;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

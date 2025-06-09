@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BusinessDayLogRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.dto.request</a> &gt; <span class="el_source">BusinessDayLogRequest.java</span></div><h1>BusinessDayLogRequest.java</h1><pre class="source lang-java linenums">package com.syos.application.dto.request;
+
+public class BusinessDayLogRequest {
+    private boolean isClosed;
+    private String initiatedBy;
+
+<span class="fc" id="L7">    public BusinessDayLogRequest(Boolean isClosed, String initiatedBy) {</span>
+<span class="pc bpc" id="L8" title="1 of 4 branches missed.">        this.isClosed = isClosed != null &amp;&amp; isClosed;</span>
+<span class="fc" id="L9">        this.initiatedBy = initiatedBy;</span>
+<span class="fc" id="L10">    }</span>
+
+<span class="nc" id="L12">    public BusinessDayLogRequest() {}</span>
+
+    public boolean getIsClosed() {
+<span class="fc" id="L15">        return isClosed;</span>
+    }
+
+    public void setIsClosed(boolean isClosed) {
+<span class="nc" id="L19">        this.isClosed = isClosed;</span>
+<span class="nc" id="L20">    }</span>
+
+    public String getInitiatedBy() {
+<span class="fc" id="L23">        return initiatedBy;</span>
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+<span class="nc" id="L27">        this.initiatedBy = initiatedBy;</span>
+<span class="nc" id="L28">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

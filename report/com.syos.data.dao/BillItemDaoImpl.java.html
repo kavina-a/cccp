@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BillItemDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">BillItemDaoImpl.java</span></div><h1>BillItemDaoImpl.java</h1><pre class="source lang-java linenums">package com.syos.data.dao;
+
+import com.syos.application.reports.data.TotalSaleReportDTO;
+import com.syos.domain.entity.BillType;
+import com.syos.utils.SQLTransactionManager;
+import com.syos.data.dao.interfaces.BillItemDao;
+import com.syos.domain.entity.BillItem;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L13">public class BillItemDaoImpl implements BillItemDao {</span>
+
+//    @Override
+//    public void save(Session session, BillItem item) {
+//        session.persist(item);
+//    }
+//
+//    @Override
+//    public List&lt;BillItem&gt; findByBillId(Session session, Long billId) {
+//        Query&lt;BillItem&gt; query = session.createQuery(
+//                &quot;FROM BillItem WHERE bill.id = :billId&quot;, BillItem.class
+//        );
+//        query.setParameter(&quot;billId&quot;, billId);
+//        return query.list();
+//    }
+
+
+    @Override
+    public void save(Connection conn, BillItem item) throws SQLException {
+<span class="nc" id="L32">        String sql = &quot;INSERT INTO BillItem (itemCode, quantity, price, billId) VALUES (?, ?, ?, ?)&quot;;</span>
+<span class="nc" id="L33">        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+<span class="nc" id="L34">            stmt.setString(1, item.getProduct().getItemCode());</span>
+<span class="nc" id="L35">            stmt.setInt(2, item.getQuantity());</span>
+<span class="nc" id="L36">            stmt.setBigDecimal(3, item.getPrice());</span>
+<span class="nc" id="L37">            stmt.setInt(4, item.getBill().getId()); // FK to Bill</span>
+<span class="nc" id="L38">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    public List&lt;BillItem&gt; findByBillId(Connection conn, int billId) throws SQLException {
+<span class="nc" id="L44">        String sql = &quot;SELECT * FROM BillItem WHERE billId = ?&quot;;</span>
+<span class="nc" id="L45">        List&lt;BillItem&gt; items = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L47">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L48">            stmt.setInt(1, billId);</span>
+<span class="nc" id="L49">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L51">                    BillItem item = new BillItem();</span>
+<span class="nc" id="L52">                    item.setId(rs.getLong(&quot;id&quot;));</span>
+<span class="nc" id="L53">                    item.setQuantity(rs.getInt(&quot;Quantity&quot;));</span>
+<span class="nc" id="L54">                    item.setPrice(rs.getBigDecimal(&quot;Price&quot;));</span>
+                    // Product reference should be resolved separately
+<span class="nc" id="L56">                    items.add(item);</span>
+<span class="nc" id="L57">                }</span>
+            }
+        }
+<span class="nc" id="L60">        return items;</span>
+    }
+
+
+    @Override
+    public List&lt;TotalSaleReportDTO&gt; getTotalSalesByDate(LocalDate date) {
+<span class="nc" id="L66">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L67">            String sql = &quot;&quot;&quot;</span>
+            SELECT bi.itemCode, p.itemName, SUM(bi.Quantity), CAST(SUM(bi.Price * bi.Quantity) AS DECIMAL(10,2)) AS TotalRevenue
+            FROM BillItem bi
+            JOIN Bill b ON bi.billId = b.id
+            JOIN Product p ON bi.itemCode = p.itemCode
+            WHERE DATE(b.CreatedAt) = ?
+            GROUP BY bi.itemCode, p.itemName
+            ORDER BY TotalRevenue DESC
+        &quot;&quot;&quot;;
+
+<span class="nc" id="L77">            List&lt;TotalSaleReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L78">            try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L79">                stmt.setDate(1, Date.valueOf(date));</span>
+<span class="nc" id="L80">                try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                    while (rs.next()) {</span>
+<span class="nc" id="L82">                        result.add(new TotalSaleReportDTO(</span>
+<span class="nc" id="L83">                                rs.getString(1),   // itemCode</span>
+<span class="nc" id="L84">                                rs.getString(2),   // itemName</span>
+<span class="nc" id="L85">                                rs.getInt(3),      // totalQuantity</span>
+<span class="nc" id="L86">                                rs.getBigDecimal(4) // totalRevenue</span>
+                        ));
+                    }
+                }
+            }
+<span class="nc" id="L91">            return result;</span>
+        });
+    }
+
+    @Override
+    public List&lt;TotalSaleReportDTO&gt; getTotalSalesByDateAndType(LocalDate date, BillType type) {
+<span class="nc" id="L97">        return SQLTransactionManager.execute(conn -&gt; {</span>
+<span class="nc" id="L98">            String sql = &quot;&quot;&quot;</span>
+            SELECT bi.itemCode, p.itemName, SUM(bi.Quantity), CAST(SUM(bi.Price * bi.Quantity) AS DECIMAL(10,2)) AS TotalRevenue
+            FROM BillItem bi
+            JOIN Bill b ON bi.billId = b.id
+            JOIN Product p ON bi.itemCode = p.itemCode
+            WHERE DATE(b.CreatedAt) = ? AND b.billType = ?
+            GROUP BY bi.itemCode, p.itemName
+            ORDER BY TotalRevenue DESC
+        &quot;&quot;&quot;;
+
+<span class="nc" id="L108">            List&lt;TotalSaleReportDTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L109">            try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L110">                stmt.setDate(1, Date.valueOf(date));</span>
+<span class="nc" id="L111">                stmt.setString(2, type.name()); // Ensure enum matches DB value</span>
+<span class="nc" id="L112">                try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                    while (rs.next()) {</span>
+<span class="nc" id="L114">                        result.add(new TotalSaleReportDTO(</span>
+<span class="nc" id="L115">                                rs.getString(1),</span>
+<span class="nc" id="L116">                                rs.getString(2),</span>
+<span class="nc" id="L117">                                rs.getInt(3),</span>
+<span class="nc" id="L118">                                rs.getBigDecimal(4)</span>
+                        ));
+                    }
+                }
+            }
+<span class="nc" id="L123">            return result;</span>
+        });
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebInventoryDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.data.dao</a> &gt; <span class="el_source">WebInventoryDaoImpl.java</span></div><h1>WebInventoryDaoImpl.java</h1><pre class="source lang-java linenums">package com.syos.data.dao;
+
+import com.syos.application.dto.WebProductDTO;
+import com.syos.data.dao.interfaces.WebInventoryDao;
+import com.syos.domain.entity.ProductStatus;
+import com.syos.domain.entity.StockStatus;
+import com.syos.domain.entity.WebInventory;
+import com.syos.domain.entity.WebProduct;
+
+import java.math.BigDecimal;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+<span class="nc" id="L17">public class WebInventoryDaoImpl implements WebInventoryDao {</span>
+
+    @Override
+    public void save(Connection conn, WebProduct webProduct) throws SQLException {
+<span class="nc" id="L21">        String sql = &quot;INSERT INTO WebProduct (itemCode, itemName, price, status, lastUpdated) &quot; +</span>
+                &quot;VALUES (?, ?, ?, ?, ?)&quot;;
+
+<span class="nc" id="L24">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L25">            stmt.setString(1, webProduct.getItemCode());</span>
+<span class="nc" id="L26">            stmt.setString(2, webProduct.getItemName());</span>
+<span class="nc" id="L27">            stmt.setBigDecimal(3, webProduct.getPrice());</span>
+            //            stmt.setInt(4, webProduct.getAvailableQuantity());
+<span class="nc" id="L29">            stmt.setString(4, webProduct.getStatus().name());</span>
+<span class="nc" id="L30">            stmt.setTimestamp(5, Timestamp.valueOf(webProduct.getLastUpdated()));</span>
+//            stmt.setString(7, webProduct.getLastUpdatedBy());
+<span class="nc" id="L32">            stmt.executeUpdate();</span>
+        }
+<span class="nc" id="L34">    }</span>
+
+    @Override
+    public Optional&lt;WebProduct&gt; findByItemCode(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L38">        String sql = &quot;SELECT * FROM WebProduct WHERE itemCode = ?&quot;;</span>
+
+<span class="nc" id="L40">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L41">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L42">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L44">                    return Optional.of(mapResultSetToEntity(rs));</span>
+                }
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        }</span>
+<span class="nc" id="L48">        return Optional.empty();</span>
+    }
+
+
+    @Override
+    public List&lt;WebProduct&gt; findAll(Connection conn) throws SQLException {
+<span class="nc" id="L54">        String sql = &quot;SELECT * FROM WebProduct&quot;;</span>
+<span class="nc" id="L55">        List&lt;WebProduct&gt; products = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L57">        try (PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="nc" id="L58">             ResultSet rs = stmt.executeQuery()) {</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc" id="L61">                products.add(mapResultSetToEntity(rs));</span>
+            }
+        }
+<span class="nc" id="L64">        return products;</span>
+    }
+
+    @Override
+    public int getAvailableQuantity(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L69">        String sql = &quot;SELECT SUM(quantityRemaining) AS availableQty &quot; +</span>
+                &quot;FROM WebInventory WHERE itemCode = ? AND status = 'ACTIVE'&quot;;
+
+<span class="nc" id="L72">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L73">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L74">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L76">                    return rs.getInt(&quot;availableQty&quot;);</span>
+                }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        }</span>
+<span class="nc" id="L80">        return 0;</span>
+    }
+
+    @Override
+    public List&lt;WebInventory&gt; findActiveBatches(Connection conn, String itemCode) throws SQLException {
+<span class="nc" id="L85">        String sql = &quot;SELECT * FROM WebInventory WHERE itemCode = ? AND status = 'ACTIVE' ORDER BY transferredDate ASC&quot;;</span>
+<span class="nc" id="L86">        List&lt;WebInventory&gt; list = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L88">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L89">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L90">            try (ResultSet rs = stmt.executeQuery()) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L92">                    list.add(mapResultSetToWebInventory(rs));</span>
+                }
+            }
+        }
+
+<span class="nc" id="L97">        return list;</span>
+    }
+
+    @Override
+    public void update(Connection conn, WebInventory webInventory) throws SQLException {
+<span class="nc" id="L102">        System.out.printf(&quot;🔧 Updating WebInventory - ItemCode: %s, BatchCode: %s, New Qty: %d, Status: %s\n&quot;,</span>
+<span class="nc" id="L103">                webInventory.getItemCode(),</span>
+<span class="nc" id="L104">                webInventory.getBatchCode(),</span>
+<span class="nc" id="L105">                webInventory.getQuantityRemaining(),</span>
+<span class="nc" id="L106">                webInventory.getStatus());</span>
+
+<span class="nc" id="L108">        String sql = &quot;UPDATE WebInventory SET quantityRemaining = ?, status = ? WHERE itemCode = ? AND batchCode = ?&quot;;</span>
+
+<span class="nc" id="L110">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L111">            stmt.setInt(1, webInventory.getQuantityRemaining());</span>
+<span class="nc" id="L112">            stmt.setString(2, webInventory.getStatus().name());</span>
+<span class="nc" id="L113">            stmt.setString(3, webInventory.getItemCode());</span>
+<span class="nc" id="L114">            stmt.setString(4, webInventory.getBatchCode());</span>
+<span class="nc" id="L115">            int affectedRows = stmt.executeUpdate();</span>
+
+<span class="nc" id="L117">            System.out.println(&quot;✅ Rows affected: &quot; + affectedRows);</span>
+        }
+<span class="nc" id="L119">    }</span>
+
+    private WebProduct mapResultSetToEntity(ResultSet rs) throws SQLException {
+<span class="nc" id="L122">        WebProduct product = new WebProduct();</span>
+<span class="nc" id="L123">        product.setItemCode(rs.getString(&quot;ItemCode&quot;));</span>
+<span class="nc" id="L124">        product.setItemName(rs.getString(&quot;ItemName&quot;));</span>
+<span class="nc" id="L125">        product.setPrice(rs.getBigDecimal(&quot;Price&quot;));</span>
+<span class="nc" id="L126">        product.setStatus(ProductStatus.valueOf(rs.getString(&quot;Status&quot;)));</span>
+<span class="nc" id="L127">        product.setLastUpdated(rs.getTimestamp(&quot;LastUpdated&quot;).toLocalDateTime());</span>
+<span class="nc" id="L128">        return product;</span>
+    }
+
+    private WebInventory mapResultSetToWebInventory(ResultSet rs) throws SQLException {
+<span class="nc" id="L132">        WebInventory wi = new WebInventory();</span>
+<span class="nc" id="L133">        wi.setItemCode(rs.getString(&quot;itemCode&quot;));</span>
+<span class="nc" id="L134">        wi.setBatchCode(rs.getString(&quot;batchCode&quot;));</span>
+<span class="nc" id="L135">        wi.setQuantityRemaining(rs.getInt(&quot;quantityRemaining&quot;));</span>
+<span class="nc" id="L136">        wi.setQuantityTransferred(rs.getInt(&quot;quantityTransferred&quot;));</span>
+<span class="nc" id="L137">        wi.setTransferredDate(rs.getTimestamp(&quot;transferredDate&quot;).toLocalDateTime());</span>
+<span class="nc" id="L138">        wi.setStatus(StockStatus.valueOf(rs.getString(&quot;status&quot;)));</span>
+        // Optional fields
+<span class="nc" id="L140">        Timestamp updated = rs.getTimestamp(&quot;updatedDateTime&quot;);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (updated != null) {</span>
+<span class="nc" id="L142">            wi.setUpdatedDateTime(updated.toLocalDateTime());</span>
+        }
+
+<span class="nc" id="L145">        Object updatedBy = rs.getObject(&quot;lastUpdatedBy&quot;);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (updatedBy != null) {</span>
+<span class="nc" id="L147">            wi.setLastUpdatedBy((Integer) updatedBy);</span>
+        }
+
+<span class="nc" id="L150">        return wi;</span>
+    }
+
+
+
+//    @Override
+//    public void save(Connection conn, WebInventory webInventory) throws SQLException {
+//        String sql = &quot;&quot;&quot;
+//            INSERT INTO tblWebInventory (ItemCode, BatchCode, ItemName, Price, Quantity, QuantityTransferred,
+//                                         TransferredDate, Status, CreatedDateTime, UpdatedDateTime, LastUpdatedBy)
+//            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//        &quot;&quot;&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, webInventory.getItemCode());
+//            stmt.setString(2, webInventory.getBatchCode());
+//            stmt.setString(3, webInventory.getItemName());
+//            stmt.setBigDecimal(4, webInventory.getPrice());
+//            stmt.setInt(5, webInventory.getQuantity());
+//            stmt.setInt(6, webInventory.getQuantityTransferred());
+//            stmt.setTimestamp(7, Timestamp.valueOf(webInventory.getTransferredDate()));
+//            stmt.setString(8, webInventory.getStatus().name());
+//            stmt.setTimestamp(9, Timestamp.valueOf(webInventory.getCreatedDateTime()));
+//            stmt.setTimestamp(10, webInventory.getUpdatedDateTime() != null ? Timestamp.valueOf(webInventory.getUpdatedDateTime()) : null);
+//            stmt.setObject(11, webInventory.getLastUpdatedBy());
+//            stmt.executeUpdate();
+//        }
+//    }
+
+    // TO DO
+//    @Override
+//    public void update(Connection conn, WebInventory webInventory) throws SQLException {
+//        String sql = &quot;&quot;&quot;
+//            UPDATE WebProduct
+//            SET BatchCode = ?, ItemName = ?, Price = ?, Quantity = ?, QuantityTransferred = ?,
+//                TransferredDate = ?, Status = ?, UpdatedDateTime = ?, LastUpdatedBy = ?
+//            WHERE ItemCode = ?
+//        &quot;&quot;&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, webInventory.getBatchCode());
+//            stmt.setString(2, webInventory.getItemName());
+//            stmt.setBigDecimal(3, webInventory.getPrice());
+//            stmt.setInt(4, webInventory.getQuantity());
+//            stmt.setInt(5, webInventory.getQuantityTransferred());
+//            stmt.setTimestamp(6, Timestamp.valueOf(webInventory.getTransferredDate()));
+//            stmt.setString(7, webInventory.getStatus().name());
+//            stmt.setTimestamp(8, Timestamp.valueOf(webInventory.getUpdatedDateTime()));
+//            stmt.setObject(9, webInventory.getLastUpdatedBy());
+//            stmt.setString(10, webInventory.getItemCode());
+//            stmt.executeUpdate();
+//        }
+//    }
+
+//    @Override
+//    public List&lt;WebProductDTO&gt; findAll(Connection conn) throws SQLException {
+//        String sql = &quot;SELECT * FROM WebProduct&quot;;
+//        List&lt;WebProductDTO&gt; list = new ArrayList&lt;&gt;();
+//        try (PreparedStatement stmt = conn.prepareStatement(sql);
+//             ResultSet rs = stmt.executeQuery()) {
+//            while (rs.next()) {
+//                list.add(mapResultSetToDTO(rs));
+//            }
+//        }
+//        return list;
+//    }
+//
+//    private WebProductDTO mapResultSetToDTO(ResultSet rs) throws SQLException {
+//        WebProductDTO dto = new WebProductDTO();
+//        dto.s(rs.getString(&quot;ItemCode&quot;));
+//        dto.setItemName(rs.getString(&quot;ItemName&quot;));
+//        dto.setPrice(rs.getBigDecimal(&quot;Price&quot;));
+//        dto.setAvailableQuantity(rs.getInt(&quot;AvailableQuantity&quot;));
+//        dto.setStatus(ProductStatus.valueOf(rs.getString(&quot;Status&quot;)));
+//        dto.setLastUpdated(rs.getTimestamp(&quot;LastUpdated&quot;).toLocalDateTime());
+//        dto.setLastUpdatedBy(rs.getString(&quot;LastUpdatedBy&quot;));
+//        return dto;
+//    }
+
+//    @Override
+//    public Optional&lt;WebProduct&gt; findByItemCode(Connection conn, String itemCode) throws SQLException {
+//        String sql = &quot;SELECT * FROM WebProduct WHERE ItemCode = ?&quot;;
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, itemCode);
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                if (rs.next()) {
+//                    return Optional.of(mapResultSetToEntity(rs));
+//                } else {
+//                    return Optional.empty();
+//                }
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public List&lt;WebProductDTO&gt; findAll(Connection conn) throws SQLException {
+//        String sql = &quot;SELECT * FROM WebProduct&quot;;
+//        List&lt;WebProduct&gt; list = new ArrayList&lt;&gt;();
+//        try (PreparedStatement stmt = conn.prepareStatement(sql);
+//             ResultSet rs = stmt.executeQuery()) {
+//            while (rs.next()) {
+//                list.add(mapResultSetToEntity(rs));
+//            }
+//        }
+//        return list;
+//    }
+
+    @Override
+    public void logWebRestockTransaction(Connection conn, String itemCode, String batchCode, int quantityRestocked) throws SQLException {
+<span class="nc" id="L257">        String sql = &quot;&quot;&quot;</span>
+        INSERT INTO WebInventory (
+            itemCode, batchCode, quantityRemaining, quantityTransferred,
+            transferredDate, status , updatedDateTime, lastUpdatedBy
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    &quot;&quot;&quot;;
+
+<span class="nc" id="L265">        try (PreparedStatement stmt = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L266">            stmt.setString(1, itemCode);</span>
+<span class="nc" id="L267">            stmt.setString(2, batchCode);</span>
+<span class="nc" id="L268">            stmt.setInt(3, quantityRestocked);</span>
+<span class="nc" id="L269">            stmt.setInt(4, quantityRestocked);</span>
+<span class="nc" id="L270">            stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));</span>
+<span class="nc" id="L271">            stmt.setString(6, StockStatus.ACTIVE.name());</span>
+<span class="nc" id="L272">            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));</span>
+<span class="nc" id="L273">            stmt.setObject(8, null);</span>
+<span class="nc" id="L274">            stmt.executeUpdate();</span>
+
+<span class="nc" id="L276">            System.out.println(&quot;✅ Web inventory restock transaction logged.&quot;);</span>
+<span class="nc" id="L277">        } catch (SQLException e) {</span>
+<span class="nc" id="L278">            System.err.println(&quot;❌ Error inserting WebInventory: &quot; + e.getMessage());</span>
+<span class="nc" id="L279">            throw e;</span>
+<span class="nc" id="L280">        }</span>
+
+
+<span class="nc" id="L283">    }</span>
+
+//    @Override
+//    public void logWebRestockTransaction(Connection conn, String itemCode, String batchCode, int quantityRestocked) throws SQLException {
+//        System.out.println(&quot;➡️ Logging restock transaction: Item=&quot; + itemCode + &quot;, Batch=&quot; + batchCode + &quot;, Qty=&quot; + quantityRestocked);
+//
+//        String sql = &quot;&quot;&quot;
+//        INSERT INTO WebInventory (ItemCode, BatchCode, QuantityTransferred, TransferredDate, Status, CreatedDateTime)
+//        VALUES (?, ?, ?, ?, ?, ?)
+//    &quot;&quot;&quot;;
+//
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, itemCode);
+//            stmt.setString(2, batchCode);
+//            stmt.setInt(3, quantityRestocked);
+//            stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+//            stmt.setString(5, StockStatus.ACTIVE.name());
+//            stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+//
+//            stmt.executeUpdate();
+//            System.out.println(&quot;✅ Restock log inserted successfully.&quot;);
+//        }
+//    }
+
+
+
+//    private WebInventory mapResultSetToEntity(ResultSet rs) throws SQLException {
+//        WebInventory wi = new WebInventory();
+//        wi.setItemCode(rs.getString(&quot;ItemCode&quot;));
+//        wi.setBatchCode(rs.getString(&quot;BatchCode&quot;));
+//        wi.setItemName(rs.getString(&quot;ItemName&quot;));
+//        wi.setPrice(rs.getBigDecimal(&quot;Price&quot;));
+//        wi.setQuantity(rs.getInt(&quot;Quantity&quot;));
+//        wi.setQuantityTransferred(rs.getInt(&quot;QuantityTransferred&quot;));
+//        wi.setTransferredDate(rs.getTimestamp(&quot;TransferredDate&quot;).toLocalDateTime());
+//        wi.setStatus(StockStatus.valueOf(rs.getString(&quot;Status&quot;)));
+//        wi.setCreatedDateTime(rs.getTimestamp(&quot;CreatedDateTime&quot;).toLocalDateTime());
+//        Timestamp updated = rs.getTimestamp(&quot;UpdatedDateTime&quot;);
+//        if (updated != null) wi.setUpdatedDateTime(updated.toLocalDateTime());
+//        wi.setLastUpdatedBy((Integer) rs.getObject(&quot;LastUpdatedBy&quot;));
+//        return wi;
+//    }
+}
+//
+//    @Override
+//    public void save(Session session, WebInventory webInventory) {
+//        session.persist(webInventory);
+//    }
+//
+//    //can be kept empty lu
+//    @Override
+//    public void update(Session session, WebInventory webInventory) {
+//        session.merge(webInventory);
+//    }
+//
+//    @Override
+//    public Optional&lt;WebInventory&gt; findByItemCode(Session session, String itemCode) {
+//        String hql = &quot;FROM WebInventory w WHERE w.itemCode = :itemCode&quot;;
+//        return session.createQuery(hql, WebInventory.class)
+//                .setParameter(&quot;itemCode&quot;, itemCode)
+//                .uniqueResultOptional();
+//    }
+//
+//    @Override
+//    public List&lt;WebInventory&gt; findAll(Session session) {
+//        String hql = &quot;FROM WebInventory&quot;;
+//        Query&lt;WebInventory&gt; query = session.createQuery(hql, WebInventory.class);
+//        return query.getResultList();
+//    }
+
+//    @Override
+//    public void delete(Session session, String itemCode) {
+//        Optional&lt;WebInventory&gt; opt = findByItemCode(session, itemCode);
+//        if (opt.isPresent()) {
+//            WebInventory inv = opt.get();
+//            inv.setDeleted(true);
+//            inv.setUpdatedDateTime(java.time.LocalDateTime.now());
+//            session.merge(inv);
+//        }
+//    }
+//
+//    @Override
+//    public void logWebRestockTransaction(Session session, String itemCode, String batchCode, int quantityRestocked) {
+//        WebInventory log = new WebInventory();
+//        log.setItemCode(itemCode);
+//        log.setBatchCode(batchCode);
+//        log.setQuantityTransferred(quantityRestocked);
+//        log.setTransferredDate(LocalDateTime.now());
+//        log.setStatus(StockStatus.ACTIVE);
+////        log.setUpdatedBy(AdminSession.getInstance().getLoggedInUserId()); // If available
+//
+//        session.persist(log);
+//    }
+//}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllocationMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.application.mapper</a> &gt; <span class="el_source">AllocationMapper.java</span></div><h1>AllocationMapper.java</h1><pre class="source lang-java linenums">package com.syos.application.mapper;
+
+import com.syos.application.dto.AllocatedRestockDTO;
+import com.syos.domain.entity.StoreStock;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L9">public class AllocationMapper {</span>
+
+    // From StoreStock entity to DTO
+    public static AllocatedRestockDTO toDTO(StoreStock storeStock, int allocatedQuantity) {
+<span class="nc" id="L13">        return new AllocatedRestockDTO(</span>
+<span class="nc" id="L14">                storeStock.getItemCode(),</span>
+<span class="nc" id="L15">                storeStock.getBatchCode(),</span>
+                allocatedQuantity
+        );
+    }
+
+    // Bulk conversion
+    public static List&lt;AllocatedRestockDTO&gt; toDTOList(List&lt;StoreStock&gt; stocks, int quantityPerBatch) {
+<span class="nc" id="L22">        return stocks.stream()</span>
+<span class="nc" id="L23">                .map(stock -&gt; toDTO(stock, quantityPerBatch)) // assuming equal split</span>
+<span class="nc" id="L24">                .collect(Collectors.toList());</span>
+    }
+
+    // Inverse mapper (optional)
+    public static StoreStock toEntity(AllocatedRestockDTO dto) {
+<span class="nc" id="L29">        StoreStock stock = new StoreStock();</span>
+<span class="nc" id="L30">        stock.setItemCode(dto.getItemCode());</span>
+<span class="nc" id="L31">        stock.setBatchCode(dto.getBatchCode());</span>
+<span class="nc" id="L32">        stock.setCurrentStock(dto.getAllocatedQuantity());</span>
+        // note: use carefully — some values may be missing
+<span class="nc" id="L34">        return stock;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

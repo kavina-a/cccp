@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebBillingStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SYOS Coverage</a> &gt; <a href="index.source.html" class="el_package">com.syos.domain.strategy.billing</a> &gt; <span class="el_source">WebBillingStrategy.java</span></div><h1>WebBillingStrategy.java</h1><pre class="source lang-java linenums">package com.syos.domain.strategy.billing;
+
+import com.syos.application.dto.builder.BillBuilder;
+import com.syos.application.dto.request.CreateBillRequest;
+import com.syos.domain.entity.*;
+import com.syos.domain.strategy.billing.interfaces.BillingStrategy;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+
+<span class="nc" id="L15">public class WebBillingStrategy implements BillingStrategy {</span>
+    @Override
+    public Bill generateBill(CreateBillRequest request, Connection conn, List&lt;BillItem&gt; billItems, Customer customer, int nextSerialNumber) {
+
+<span class="nc" id="L19">        BigDecimal total = billItems.stream()</span>
+<span class="nc" id="L20">                .map(item -&gt; item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))</span>
+<span class="nc" id="L21">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+
+<span class="nc" id="L23">        LocalDate today = LocalDate.now();</span>
+<span class="nc" id="L24">        LocalDateTime currentDateTime = LocalDateTime.now();</span>
+
+<span class="nc" id="L26">        return new BillBuilder()</span>
+<span class="nc" id="L27">                .withSerialNumber(nextSerialNumber)</span>
+<span class="nc" id="L28">                .withBillDate(today)</span>
+<span class="nc" id="L29">                .withCustomer(customer)  // customer required or nullable based on your future design</span>
+<span class="nc" id="L30">                .withTotalAmount(total)</span>
+<span class="nc" id="L31">                .withCashTendered(null) // explicitly null or optional based on future logic</span>
+<span class="nc" id="L32">                .withChangeAmount(null)       // explicitly null</span>
+<span class="nc" id="L33">                .withCreatedAt(currentDateTime)</span>
+<span class="nc" id="L34">                .withBillType(BillType.WEB_BILL)</span>
+<span class="nc" id="L35">                .withPaymentMethod(request.getPaymentMethod())</span>
+<span class="nc" id="L36">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
