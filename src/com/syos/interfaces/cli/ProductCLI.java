@@ -3,7 +3,7 @@ package com.syos.interfaces.cli;
 import com.syos.application.dto.ProductDTO;
 import com.syos.application.dto.request.CreateProductRequest;
 import com.syos.domain.service.ProductService;
-import com.syos.utils.ProductCliFormatter;
+import com.syos.interfaces.cli.utils.ProductCliFormatter;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class ProductCLI {
                 case 2 -> viewAllProducts();
                 case 3 -> searchProduct(scanner);
                 case 4 -> updateProduct(scanner);
-                case 5 -> deleteProduct(scanner);
+//                case 5 -> deleteProduct(scanner);
                 case 6 -> {
                     return;
                 }
@@ -47,8 +47,27 @@ public class ProductCLI {
     }
 
     private void addProduct(Scanner scanner) {
-        System.out.print("Enter Item Code: ");
-        String code = scanner.nextLine();
+        System.out.print("Enter Category Code (e.g., BEV): ");
+        String categoryCode = scanner.nextLine().trim().toUpperCase();
+
+        System.out.print("Enter Brand Code (e.g., TRO): ");
+        String brandCode = scanner.nextLine().trim().toUpperCase();
+
+        System.out.print("Enter Size Code (e.g., 1L): ");
+        String sizeCode = scanner.nextLine().trim().toUpperCase();
+
+        System.out.print("Enter Product Number (e.g., 0012): ");
+        String productNo = scanner.nextLine().trim();
+
+        String itemCode = String.format("%s-%s-%s-%s", categoryCode, brandCode, sizeCode, productNo);
+
+        System.out.println("Generated Item Code: " + itemCode);
+        System.out.print("Proceed with creation? (yes/no): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        if (!confirm.equals("yes")) {
+            System.out.println("Product creation cancelled.");
+            return;
+        }
 
         System.out.print("Enter Name: ");
         String name = scanner.nextLine();
@@ -57,10 +76,24 @@ public class ProductCLI {
         double price = scanner.nextDouble();
         scanner.nextLine();
 
-        CreateProductRequest request = new CreateProductRequest(code, name, price);
+        System.out.print("Enter Estimated Reorder Level (optional, press Enter to skip): ");
+        String reorderLevelInput = scanner.nextLine().trim();
+
+        Integer reorderLevel = null;
+        if (!reorderLevelInput.isEmpty()) {
+            try {
+                reorderLevel = Integer.parseInt(reorderLevelInput);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Reorder level will be skipped.");
+            }
+        }
+
+
+        CreateProductRequest request = new CreateProductRequest(itemCode, name, price, reorderLevel);
         productService.createProduct(request);
         System.out.println("Product added successfully.");
     }
+
 
     private void viewAllProducts() {
         List<ProductDTO> products = productService.getAllProducts();
@@ -97,7 +130,19 @@ public class ProductCLI {
         double price = scanner.nextDouble();
         scanner.nextLine();
 
-        CreateProductRequest updated = new CreateProductRequest(code, name, price);
+        System.out.print("Enter New Estimated Reorder Level (optional, press Enter to skip): ");
+        String reorderLevelInput = scanner.nextLine().trim();
+
+        Integer reorderLevel = null;
+        if (!reorderLevelInput.isEmpty()) {
+            try {
+                reorderLevel = Integer.parseInt(reorderLevelInput);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Reorder level will be skipped.");
+            }
+        }
+
+        CreateProductRequest updated = new CreateProductRequest(code, name, price,reorderLevel);
         Optional<ProductDTO> updatedOpt = productService.updateProduct(updated);
 
         if (updatedOpt.isPresent()) {
@@ -109,17 +154,17 @@ public class ProductCLI {
         }
     }
 
-    private void deleteProduct(Scanner scanner) {
-        System.out.print("Enter Item Code to Delete: ");
-        String code = scanner.nextLine();
-
-        boolean deleted = productService.deleteProduct(code);
-
-        if (deleted) {
-            System.out.println(" Product deleted (soft delete).");
-        } else {
-            System.out.println(" Product not found — nothing deleted.");
-        }
-    }
+//    private void deleteProduct(Scanner scanner) {
+//        System.out.print("Enter Item Code to Delete: ");
+//        String code = scanner.nextLine();
+//
+//        boolean deleted = productService.deleteProduct(code);
+//
+//        if (deleted) {
+//            System.out.println(" Product deleted (soft delete).");
+//        } else {
+//            System.out.println(" Product not found — nothing deleted.");
+//        }
+//    }
 
 }

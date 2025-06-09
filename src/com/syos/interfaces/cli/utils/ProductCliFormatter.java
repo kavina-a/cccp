@@ -1,4 +1,4 @@
-package com.syos.utils;
+package com.syos.interfaces.cli.utils;
 
 import com.syos.application.dto.ProductDTO;
 

@@ -1,103 +1,69 @@
 package com.syos.domain.entity;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "tblBill")
 public class Bill {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "SerialNumber", nullable = false, unique = true) // have like this -> BILL-20240523-0001
-    private String serialNumber;
-
-    @Column(name = "Date", nullable = false)
-    private LocalDateTime date;
-
-    @Column(name = "TotalAmount", nullable = false)
+    private int id;
+    private int serialNumber;
+    private LocalDate billDate;
     private BigDecimal totalAmount;
-
-    @Column(name = "CashTendered")
     private BigDecimal cashTendered;
-
-    @Column(name = "ChangeAmount")
-    private BigDecimal change;
-
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<BillItem> items;
-
-    @ManyToOne
-    @JoinColumn(name = "CustomerID", nullable = true)
+    private BigDecimal changeAmount;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private BillType billType;
+    private List<BillItem> items = new ArrayList<>();
     private Customer customer;
+    private PaymentMethod paymentMethod;
 
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
+    public int getSerialNumber() { return serialNumber; }
+    public void setSerialNumber(int serialNumber) { this.serialNumber = serialNumber; }
 
-    public Bill() {}
+    public LocalDate getBillDate() { return billDate; }
+    public void setBillDate(LocalDate billDate) { this.billDate = billDate; }
 
-    public Long getId() {
-        return id;
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+
+    public BigDecimal getCashTendered() { return cashTendered; }
+    public void setCashTendered(BigDecimal cashTendered) { this.cashTendered = cashTendered; }
+
+    public BigDecimal getChangeAmount() { return changeAmount; }
+
+    public void setChangeAmount(BigDecimal changeAmount) { this.changeAmount = changeAmount; }
+
+    public List<BillItem> getItems() { return items; }
+    public void setItems(List<BillItem> items) { this.items = items; }
+
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public BillType getBillType() { return billType; }
+    public void setBillType(BillType billType) {
+        this.billType = billType;
     }
 
-    public String getSerialNumber() {
-        return serialNumber;
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void addItem(BillItem item) {
+        if (items == null) items = new ArrayList<>();
+        item.setBill(this);
+        items.add(item);
     }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public BigDecimal getCashTendered() {
-        return cashTendered;
-    }
-
-    public void setCashTendered(BigDecimal cashTendered) {
-        this.cashTendered = cashTendered;
-    }
-
-    public BigDecimal getChange() {
-        return change;
-    }
-
-    public void setChange(BigDecimal change) {
-        this.change = change;
-    }
-
-    public List<BillItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<BillItem> items) {
-        this.items = items;
-    }
-
-    public void setCreatedAt(LocalDateTime now) {
-        this.date = now;
-    }
-
-
 }

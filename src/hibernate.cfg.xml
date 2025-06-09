@@ -1,22 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD//EN"
-        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-    <session-factory>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE hibernate-configuration PUBLIC-->
+<!--        "-//Hibernate/Hibernate Configuration DTD//EN"-->
+<!--        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">-->
+<!--<hibernate-configuration>-->
+<!--    <session-factory>-->
 
-        <!-- Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/syos?useSSL=false</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">1234</property>
+<!--        &lt;!&ndash; Database connection settings &ndash;&gt;-->
+<!--        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>-->
+<!--        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/syos?useSSL=false</property>-->
+<!--        <property name="hibernate.connection.username">root</property>-->
+<!--        <property name="hibernate.connection.password">1234</property>-->
 
-        <!-- Hibernate properties -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        <property name="hibernate.show_sql">true</property>
+<!--        &lt;!&ndash; Hibernate properties &ndash;&gt;-->
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>-->
+<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+<!--        <property name="hibernate.show_sql">true</property>-->
 
-        <!-- Classes -->
-        <mapping class="com.syos.domain.entity.Product"/>
-    </session-factory>
-</hibernate-configuration>
+<!--        &lt;!&ndash; Classes &ndash;&gt;-->
+<!--        <mapping class="com.syos.domain.entity.Product"/>-->
+<!--        <mapping class="com.syos.domain.entity.User"/>-->
+<!--        <mapping class="com.syos.domain.entity.Employee"/>-->
+<!--        <mapping class="com.syos.domain.entity.Customer"/>-->
+<!--        <mapping class="com.syos.domain.entity.Bill"/>-->
+<!--        <mapping class="com.syos.domain.entity.BillItem"/>-->
+<!--        <mapping class="com.syos.domain.entity.StoreStock"/>-->
+<!--        <mapping class="com.syos.domain.entity.Shelf"/>-->
+
+
+
+
+<!--    </session-factory>-->
+<!--</hibernate-configuration>-->

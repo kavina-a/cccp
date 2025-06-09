@@ -1,67 +1,26 @@
 package com.syos.domain.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tblProduct")
 public class Product {
 
-    @Id
-    @Column(name = "ItemCode") // [CategoryCode]-[BrandCode]-[SizeCode]-[Sequence] - BEV-TRO-1L-0012
-    private String itemCode;
-
-    @Column(name = "BatchCode")
-    private String batchCode;
-
-    @Column(name = "ItemName")
+    private String itemCode; // Format: BEV-TRO-1L-0012
     private String itemName;
-
-    @Column(name = "Price")
     private double price;
-
-    @Column(name = "PurchaseDate")
-    private LocalDateTime purchaseDate;
-
-    @Column(name = "ExpiryDate")
-    private LocalDateTime expiryDate;
-
-    @Column(name = "InitialQuantity")
-    private int initialQuantity;
-
-    @Column(name = "CurrentQuantity")
-    private int currentQuantity;
-
-    @Column(name = "IsActive")
-    private boolean isActive;
-
-    @Column(name = "IsDeleted")
-    private boolean isDeleted;
-
-    @Column(name = "UpdatedDateTime")
     private LocalDateTime updatedDateTime;
-
-    @Column(name = "UpdatedBy")
-    private int updatedBy;
+    private String updatedBy;
+    private ProductStatus status;
+    private Integer reorderLevel; // Nullable, used for stock management
 
     public Product() {
     }
 
-    // Getters and Setters
     public String getItemCode() {
         return itemCode;
     }
 
     public void setItemCode(String itemCode) {
         this.itemCode = itemCode;
-    }
-
-    public String getBatchCode() {
-        return batchCode;
-    }
-
-    public void setBatchCode(String batchCode) {
-        this.batchCode = batchCode;
     }
 
     public String getItemName() {
@@ -80,54 +39,6 @@ public class Product {
         this.price = price;
     }
 
-    public LocalDateTime getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public int getInitialQuantity() {
-        return initialQuantity;
-    }
-
-    public void setInitialQuantity(int initialQuantity) {
-        this.initialQuantity = initialQuantity;
-    }
-
-    public int getCurrentQuantity() {
-        return currentQuantity;
-    }
-
-    public void setCurrentQuantity(int currentQuantity) {
-        this.currentQuantity = currentQuantity;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
     public LocalDateTime getUpdatedDateTime() {
         return updatedDateTime;
     }
@@ -136,11 +47,27 @@ public class Product {
         this.updatedDateTime = updatedDateTime;
     }
 
-    public int getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(int updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public ProductStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProductStatus status) {
+        this.status = status;
+    }
+
+    public Integer getReorderLevel() {
+        return reorderLevel;
+    }
+
+    public void setReorderLevel(Integer reorderLevel) {
+        this.reorderLevel = reorderLevel;
     }
 }

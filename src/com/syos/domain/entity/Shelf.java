@@ -1,57 +1,32 @@
 package com.syos.domain.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tblShelf")
 public class Shelf {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductCode")
-    private Product product;
-
-    @Column(name = "BatchCode", nullable = false)
-    private String batchCode;
-
-    @Column(name = "QuantityOnShelf", nullable = false)
+    private String shelfId;
+    private String itemCode;
     private int quantityOnShelf;
-
-    @Column(name = "UpdatedDateTime")
-    private LocalDateTime updatedDateTime;
-
-    @Column(name = "UpdatedBy")
-    private int updatedBy;
-
-    public Shelf() {}
+    private String location;
+    private StockStatus status = StockStatus.ACTIVE;
+    private String updatedBy;
+    private LocalDateTime updatedAt;
 
 
-    public Long getId() {
-        return id;
+    public String getShelfId() {
+        return shelfId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setShelfId(String shelfId) {
+        this.shelfId = shelfId;
     }
 
-    public Product getProduct() {
-        return product;
+    public String getItemCode() {
+        return itemCode;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public String getBatchCode() {
-        return batchCode;
-    }
-
-    public void setBatchCode(String batchCode) {
-        this.batchCode = batchCode;
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 
     public int getQuantityOnShelf() {
@@ -62,19 +37,35 @@ public class Shelf {
         this.quantityOnShelf = quantityOnShelf;
     }
 
-    public LocalDateTime getUpdatedDateTime() {
-        return updatedDateTime;
+    public String getLocation() {
+        return location;
     }
 
-    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
-        this.updatedDateTime = updatedDateTime;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public int getUpdatedBy() {
+    public StockStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(StockStatus status) {
+        this.status = status;
+    }
+
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(int updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

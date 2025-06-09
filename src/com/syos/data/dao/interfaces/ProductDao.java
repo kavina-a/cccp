@@ -2,16 +2,17 @@ package com.syos.data.dao.interfaces;
 
 import com.syos.domain.entity.Product;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.List;
 
 public interface ProductDao {
-    void save(Product product);
-    Optional<Product> findByItemCode(String itemCode);
-
-    List<Product> findAll();
-
-    void update(Product product);
-
-    void deleteByItemCode(String itemCode);
+    void save(Connection conn, Product product) throws SQLException;
+    Optional<Product> findByItemCode(Connection conn, String itemCode) throws SQLException;
+    List<Product> findAll(Connection conn) throws SQLException;
+    void update(Connection conn, Product product) throws SQLException;
+//    void deleteByItemCode(Connection conn, String itemCode) throws SQLException;
 }
+
+

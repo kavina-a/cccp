@@ -23,15 +23,9 @@ public abstract class User {
     @Column(name = "IsActive", nullable = false)
     private boolean isActive = true;
 
-    @Column(name = "IsDeleted", nullable = false)
-    private boolean isDeleted = false;
-
     @Column(name = "CreatedAt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-
-    @Column(name = "UpdatedBy")
-    private Integer updatedBy;
 
     @Column(name = "UpdatedDateTime", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,14 +47,8 @@ public abstract class User {
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 
-    public boolean isDeleted() { return isDeleted; }
-    public void setDeleted(boolean deleted) { isDeleted = deleted; }
-
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-
-    public Integer getUpdatedBy() { return updatedBy; }
-    public void setUpdatedBy(Integer updatedBy) { this.updatedBy = updatedBy; }
 
     public Date getUpdatedDateTime() { return updatedDateTime; }
     public void setUpdatedDateTime(Date updatedDateTime) { this.updatedDateTime = updatedDateTime; }
