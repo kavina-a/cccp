@@ -1,16 +1,16 @@
 package com.syos.service;
 
-import com.syos.application.dto.LowStockEventDTO;
-import com.syos.application.dto.ShelfDTO;
-import com.syos.application.dto.request.CreateShelfRequest;
-import com.syos.data.dao.interfaces.ShelfDao;
-import com.syos.data.dao.interfaces.StoreDao;
-import com.syos.domain.entity.ShelfInventory;
-import com.syos.domain.entity.StockStatus;
-import com.syos.domain.notifications.StockEventPublisher;
-import com.syos.domain.service.ShelfService;
+import server.application.dto.LowStockEventDTO;
+import server.application.dto.ShelfDTO;
+import server.application.dto.request.CreateShelfRequest;
+import server.data.dao.interfaces.ShelfDao;
+import server.data.dao.interfaces.StoreDao;
+import server.domain.entity.ShelfInventory;
+import server.domain.entity.StockStatus;
+import server.domain.notifications.StockEventPublisher;
+import server.domain.service.ShelfService;
 import com.syos.service.testutils.TestData;
-import com.syos.utils.SessionManager;
+import server.utils.SessionManager;
 import org.hibernate.annotations.processing.SQL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

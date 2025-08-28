@@ -1,7 +1,8 @@
 package com.syos.utils;
 
-import com.syos.domain.entity.Customer;
-import com.syos.domain.entity.Employee;
+import server.utils.SessionManager;
+import server.domain.entity.Customer;
+import server.domain.entity.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class SessionManagerTest {
 
     @AfterEach
     void resetSession() {
-        sessionManager.logout(); // Ensure clean state between tests
+        sessionManager.logout();
     }
 
     @Test
@@ -25,7 +26,7 @@ class SessionManagerTest {
 
         assertEquals(employee, sessionManager.getLoggedInEmployee());
         assertTrue(sessionManager.isEmployeeLoggedIn());
-        assertNull(sessionManager.getLoggedInCustomer()); // Dual login prevention
+        assertNull(sessionManager.getLoggedInCustomer());
     }
 
     @Test
@@ -37,7 +38,7 @@ class SessionManagerTest {
 
         assertEquals(customer, sessionManager.getLoggedInCustomer());
         assertTrue(sessionManager.isCustomerLoggedIn());
-        assertNull(sessionManager.getLoggedInEmployee()); // Dual login prevention
+        assertNull(sessionManager.getLoggedInEmployee());
     }
 
     @Test
@@ -52,7 +53,7 @@ class SessionManagerTest {
 
         assertEquals(employee, sessionManager.getLoggedInEmployee());
         assertTrue(sessionManager.isEmployeeLoggedIn());
-        assertNull(sessionManager.getLoggedInCustomer()); // Customer session should be cleared
+        assertNull(sessionManager.getLoggedInCustomer());
     }
 
     @Test
@@ -67,7 +68,7 @@ class SessionManagerTest {
 
         assertEquals(customer, sessionManager.getLoggedInCustomer());
         assertTrue(sessionManager.isCustomerLoggedIn());
-        assertNull(sessionManager.getLoggedInEmployee()); // Employee session should be cleared
+        assertNull(sessionManager.getLoggedInEmployee());
     }
 
     @Test
@@ -92,7 +93,7 @@ class SessionManagerTest {
         cust.setCustomerID("C001");
 
         sessionManager.setLoggedInEmployee(emp);
-        sessionManager.setLoggedInCustomer(cust); // This should override
+        sessionManager.setLoggedInCustomer(cust);
 
         assertTrue(sessionManager.isCustomerLoggedIn());
         assertFalse(sessionManager.isEmployeeLoggedIn());
@@ -106,7 +107,7 @@ class SessionManagerTest {
         cust.setCustomerID("C002");
 
         sessionManager.setLoggedInCustomer(cust);
-        sessionManager.setLoggedInCustomer(cust); // Repeat
+        sessionManager.setLoggedInCustomer(cust);
 
         assertEquals(cust, sessionManager.getLoggedInCustomer());
     }

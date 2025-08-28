@@ -1,22 +1,20 @@
 package com.syos.service;
 
-import com.syos.application.dto.AuthenticationDTO;
-import com.syos.application.dto.request.CustomerLoginRequest;
-import com.syos.application.dto.request.CustomerSignupRequest;
-import com.syos.application.dto.request.EmployeeLoginRequest;
-import com.syos.data.dao.interfaces.CustomerDao;
-import com.syos.data.dao.interfaces.EmployeeDao;
-import com.syos.domain.entity.Customer;
-import com.syos.domain.entity.Employee;
-import com.syos.domain.service.AuthenticationService;
-import com.syos.utils.SessionManager;
+import server.application.dto.AuthenticationDTO;
+import server.application.dto.request.CustomerLoginRequest;
+import server.application.dto.request.CustomerSignupRequest;
+import server.application.dto.request.EmployeeLoginRequest;
+import server.data.dao.interfaces.CustomerDao;
+import server.data.dao.interfaces.EmployeeDao;
+import server.domain.entity.Customer;
+import server.domain.entity.Employee;
+import server.domain.service.AuthenticationService;
+import server.utils.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

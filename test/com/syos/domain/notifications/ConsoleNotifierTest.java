@@ -1,8 +1,8 @@
 package com.syos.domain.notifications;
 
 
-import com.syos.application.dto.LowStockEventDTO;
-import com.syos.domain.notifications.ConsoleNotifier;
+import server.domain.notifications.ConsoleNotifier;
+import server.application.dto.LowStockEventDTO;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;

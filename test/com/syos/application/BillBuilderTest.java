@@ -1,9 +1,9 @@
 
 package com.syos.application;
 
-import com.syos.application.dto.builder.BillBuilder;
-import com.syos.domain.entity.*;
+import server.application.dto.builder.BillBuilder;
 import org.junit.jupiter.api.Test;
+import server.domain.entity.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,9 +1,12 @@
 package com.syos.application;
 
-import com.syos.application.postprocessors.StockDeductionProcessor;
-import com.syos.domain.entity.*;
-import com.syos.domain.service.ShelfService;
-import com.syos.domain.service.WebInventoryService;
+import server.domain.entity.Bill;
+import server.domain.entity.BillItem;
+import server.domain.entity.BillType;
+import server.domain.entity.Product;
+import server.application.postprocessors.StockDeductionProcessor;
+import server.domain.service.ShelfService;
+import server.domain.service.WebInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

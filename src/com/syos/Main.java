@@ -1,7 +1,7 @@
 package com.syos;
 
-import com.syos.interfaces.cli.ApplicationBuilder;
-import com.syos.interfaces.cli.CLISessionController;
+import client.desktop.interfaces.cli.ApplicationBuilder;
+import client.desktop.interfaces.cli.CLISessionController;
 
 import java.sql.SQLException;
 
@@ -11,3 +11,4 @@ public class Main {
         cliSession.run();
     }
 }
+

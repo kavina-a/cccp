@@ -1,13 +1,12 @@
 package com.syos.service;
 
-import com.syos.application.dto.WebProductDTO;
-import com.syos.application.dto.request.CreateWebInventoryRequest;
-import com.syos.data.dao.interfaces.WebInventoryDao;
-import com.syos.domain.entity.ProductStatus;
-import com.syos.domain.entity.StockStatus;
-import com.syos.domain.entity.WebInventory;
-import com.syos.domain.entity.WebProduct;
-import com.syos.domain.service.WebInventoryService;
+import server.application.dto.WebProductDTO;
+import server.data.dao.interfaces.WebInventoryDao;
+import server.domain.entity.ProductStatus;
+import server.domain.entity.StockStatus;
+import server.domain.entity.WebInventory;
+import server.domain.entity.WebProduct;
+import server.domain.service.WebInventoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

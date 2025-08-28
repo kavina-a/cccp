@@ -1,8 +1,8 @@
 package com.syos.domain.notifications;
 
-import com.syos.application.dto.LowStockEventDTO;
-import com.syos.domain.notifications.StockEventPublisher;
-import com.syos.domain.notifications.StockObserver;
+import server.domain.notifications.StockEventPublisher;
+import server.domain.notifications.StockObserver;
+import server.application.dto.LowStockEventDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

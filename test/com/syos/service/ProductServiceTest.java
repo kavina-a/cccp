@@ -1,22 +1,17 @@
 package com.syos.service;
 
-import com.syos.application.dto.ProductDTO;
-import com.syos.application.dto.request.CreateProductRequest;
-import com.syos.data.dao.ProductDaoImpl;
-import com.syos.data.dao.interfaces.ProductDao;
-import com.syos.domain.entity.Employee;
-import com.syos.domain.entity.Product;
-import com.syos.domain.entity.ProductStatus;
-import com.syos.domain.service.ProductService;
-import com.syos.utils.SessionManager;
+import server.application.dto.ProductDTO;
+import server.application.dto.request.CreateProductRequest;
+import server.data.dao.interfaces.ProductDao;
+import server.domain.entity.Employee;
+import server.domain.entity.Product;
+import server.domain.service.ProductService;
+import server.utils.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

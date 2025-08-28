@@ -1,8 +1,8 @@
 package com.syos.integration;
 
-import com.syos.data.dao.ProductDaoImpl;
-import com.syos.domain.entity.Product;
-import com.syos.domain.entity.ProductStatus;
+import server.data.dao.ProductDaoImpl;
+import server.domain.entity.Product;
+import server.domain.entity.ProductStatus;
 import com.syos.integration.utils.TestDatabaseInitializer;
 import org.junit.jupiter.api.*;
 

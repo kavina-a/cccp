@@ -1,8 +1,8 @@
 package com.syos.application;
 
-import com.syos.application.dto.AllocatedRestockDTO;
-import com.syos.application.mapper.AllocationMapper;
-import com.syos.domain.entity.StoreStock;
+import server.application.dto.AllocatedRestockDTO;
+import server.application.mapper.AllocationMapper;
+import server.domain.entity.StoreStock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

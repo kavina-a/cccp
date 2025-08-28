@@ -1,14 +1,14 @@
 package com.syos.service;
 
-import com.syos.application.dto.StoreStockDTO;
-import com.syos.application.dto.request.CreateStockRequest;
-import com.syos.data.dao.ProductDaoImpl;
-import com.syos.data.dao.StoreDaoImpl;
-import com.syos.domain.entity.Product;
-import com.syos.domain.entity.StoreStock;
-import com.syos.domain.service.StoreService;
+import server.application.dto.StoreStockDTO;
+import server.application.dto.request.CreateStockRequest;
+import server.data.dao.ProductDaoImpl;
+import server.data.dao.StoreDaoImpl;
+import server.domain.entity.Product;
+import server.domain.entity.StoreStock;
+import server.domain.service.StoreService;
 import com.syos.service.testutils.TestData;
-import com.syos.utils.SessionManager;
+import server.utils.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

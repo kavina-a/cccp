@@ -1,8 +1,11 @@
 package com.syos.service;
 
-import com.syos.application.reports.service.ReportGenerationService;
-import com.syos.data.dao.interfaces.*;
-import com.syos.domain.entity.ReportType;
+import server.data.dao.interfaces.BillDao;
+import server.data.dao.interfaces.BillItemDao;
+import server.data.dao.interfaces.ShelfDao;
+import server.data.dao.interfaces.StoreDao;
+import server.application.reports.service.ReportGenerationService;
+import server.domain.entity.ReportType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

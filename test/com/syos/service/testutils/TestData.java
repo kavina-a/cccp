@@ -1,6 +1,6 @@
 package com.syos.service.testutils;
 
-import com.syos.domain.entity.*;
+import server.domain.entity.*;
 
 import java.sql.Date;
 import java.time.LocalDate;

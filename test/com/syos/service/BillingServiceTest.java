@@ -1,17 +1,19 @@
 package com.syos.service;
 
-import com.syos.application.dto.request.BillItemRequest;
-import com.syos.application.dto.request.CreateBillRequest;
-import com.syos.application.postprocessors.interfaces.BillPostProcessor;
-import com.syos.domain.entity.Customer;
-import com.syos.domain.service.BillItemService;
-import com.syos.data.dao.interfaces.BillDao;
-import com.syos.data.dao.interfaces.BillItemDao;
-import com.syos.data.dao.interfaces.CustomerDao;
-import com.syos.domain.entity.TransactionType;
+import server.domain.entity.Bill;
+import server.domain.entity.BillItem;
+import server.application.dto.request.BillItemRequest;
+import server.application.dto.request.CreateBillRequest;
+import server.application.postprocessors.interfaces.BillPostProcessor;
+import server.domain.entity.Customer;
+import server.domain.service.BillItemService;
+import server.data.dao.interfaces.BillDao;
+import server.data.dao.interfaces.BillItemDao;
+import server.data.dao.interfaces.CustomerDao;
+import server.domain.entity.TransactionType;
 
-import com.syos.domain.service.BillingService;
-import com.syos.domain.strategy.billing.interfaces.BillingStrategy;
+import server.domain.service.BillingService;
+import server.domain.strategy.billing.interfaces.BillingStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +24,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
-
-import com.syos.domain.entity.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

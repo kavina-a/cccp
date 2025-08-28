@@ -1,27 +1,23 @@
 package com.syos.service;
 
-import com.syos.application.dto.AllocatedRestockDTO;
-import com.syos.application.dto.request.AllocationRequest;
-import com.syos.data.dao.interfaces.ShelfDao;
-import com.syos.data.dao.interfaces.StoreDao;
-import com.syos.data.dao.interfaces.WebInventoryDao;
-import com.syos.domain.entity.AllocationTarget;
-import com.syos.domain.entity.Employee;
-import com.syos.domain.entity.StoreStock;
-import com.syos.domain.service.AllocationServiceImpl;
-import com.syos.domain.strategy.stockselection.interfaces.StockSelectionStrategy;
+import server.application.dto.AllocatedRestockDTO;
+import server.application.dto.request.AllocationRequest;
+import server.data.dao.interfaces.ShelfDao;
+import server.data.dao.interfaces.StoreDao;
+import server.data.dao.interfaces.WebInventoryDao;
+import server.domain.entity.AllocationTarget;
+import server.domain.entity.StoreStock;
+import server.domain.service.AllocationServiceImpl;
+import server.domain.strategy.stockselection.interfaces.StockSelectionStrategy;
 import com.syos.service.testutils.TestData;
-import com.syos.utils.SessionManager;
+import server.utils.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

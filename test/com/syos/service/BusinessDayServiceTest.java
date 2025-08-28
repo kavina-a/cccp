@@ -1,10 +1,10 @@
 package com.syos.service;
 
-import com.syos.application.businessDay.BusinessDayOrchestrator;
-import com.syos.data.dao.interfaces.BusinessDayLogDao;
-import com.syos.domain.entity.Employee;
-import com.syos.domain.service.BusinessDayService;
-import com.syos.utils.SessionManager;
+import server.application.businessDay.BusinessDayOrchestrator;
+import server.data.dao.interfaces.BusinessDayLogDao;
+import server.domain.entity.Employee;
+import server.domain.service.BusinessDayService;
+import server.utils.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

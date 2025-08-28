@@ -1,8 +1,8 @@
 package com.syos.domain.strategy;
 
-import com.syos.application.dto.AllocatedRestockDTO;
-import com.syos.domain.entity.StoreStock;
-import com.syos.domain.strategy.stockselection.FEFOStockSelectionStrategy;
+import server.application.dto.AllocatedRestockDTO;
+import server.domain.entity.StoreStock;
+import server.domain.strategy.stockselection.FEFOStockSelectionStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
